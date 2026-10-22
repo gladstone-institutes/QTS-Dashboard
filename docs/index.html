@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tool Usage Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="tab-bar">
+      <a href="submit.html" class="tab-link">
+        <svg class="tab-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect x="3" y="3" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Log a usage scenario
+      </a>
+      <a href="index.html" class="tab-link is-active">
+        <svg class="tab-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect x="2.5" y="11" width="3.5" height="6.5" rx="1" fill="currentColor"/>
+          <rect x="8.25" y="6" width="3.5" height="11.5" rx="1" fill="currentColor"/>
+          <rect x="14" y="2.5" width="3.5" height="15" rx="1" fill="currentColor"/>
+        </svg>
+        Dashboard
+      </a>
+    </nav>
+
+    <header class="page-header">
+      <div class="header-top">
+        <span class="badge badge-muted" id="last-updated">Last updated: —</span>
+      </div>
+      <h1>Tool Usage Dashboard</h1>
+      <p class="subtitle">Where research teams are hitting gaps, tracked from our metrics sheet</p>
+    </header>
+
+    <section class="stat-grid" aria-live="polite">
+      <div class="stat-tile">
+        <svg class="stat-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect x="2.5" y="11" width="3.5" height="6.5" rx="1" fill="currentColor"/>
+          <rect x="8.25" y="6" width="3.5" height="11.5" rx="1" fill="currentColor"/>
+          <rect x="14" y="2.5" width="3.5" height="15" rx="1" fill="currentColor"/>
+        </svg>
+        <span class="stat-label">Total usage scenarios tracked</span>
+        <span class="stat-value" id="total-rows">—</span>
+      </div>
+
+      <div class="stat-tile">
+        <svg class="stat-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M2.5 6.5 10 2.5l7.5 4-7.5 4-7.5-4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M5 8.5v5l5 2.5 5-2.5v-5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span class="stat-label">Gap categories tracked</span>
+        <span class="stat-value" id="category-count">—</span>
+      </div>
+
+      <div class="stat-tile">
+        <svg class="stat-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M4 17V4.5a1 1 0 0 1 1-1h6.6l3.9 3.9V17" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M11.5 3.5V8h4.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span class="stat-label">Most common gap</span>
+        <span class="stat-value stat-value-text" id="top-category">—</span>
+        <span class="stat-sub" id="top-category-pct"></span>
+      </div>
+    </section>
+
+    <section class="chart-card">
+      <div class="chart-card-header">
+        <h2>Nature of the gap they want to close</h2>
+        <span class="chart-card-sub">Ranked by number of usage scenarios</span>
+      </div>
+      <div id="chart-empty" class="empty-state" hidden></div>
+      <div id="chart-container"></div>
+    </section>
+
+    <section class="chart-card">
+      <div class="chart-card-header">
+        <h2>Usage scenarios submitted over time</h2>
+        <span class="chart-card-sub">By month</span>
+      </div>
+      <div id="trend-empty" class="empty-state" hidden></div>
+      <div id="trend-container" class="trend-chart"></div>
+    </section>
+
+    <footer class="page-footer">
+      <span id="data-source-note">Data source: local sample dataset</span>
+    </footer>
+  </main>
+
+  <div id="tooltip" class="tooltip" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-10-02T18:18:40.612792+00:00",
+  "total_rows": 150,
+  "gap_counts": {
+    "Data access / discovery": 47,
+    "Knowledge gap": 29,
+    "Tooling / workflow automation": 26,
+    "Data integration across sources": 16,
+    "Reproducibility": 13,
+    "Unspecified": 11,
+    "Standardization / terminology": 8
+  },
+  "monthly_counts": {
+    "2026-03": 24,
+    "2026-04": 19,
+    "2026-05": 24,
+    "2026-06": 20,
+    "2026-07": 31,
+    "2026-08": 25,
+    "2026-09": 5,
+    "2026-10": 2
+  }
+}

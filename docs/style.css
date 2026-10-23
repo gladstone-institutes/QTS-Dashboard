@@ -17,6 +17,20 @@
   --rank-bg: #edece7;
   --status-critical: #d03b3b;
   --status-critical-bg: rgba(208, 59, 59, 0.10);
+  /* Status palette -- fixed, never themed (same values in light/dark per
+     the dataviz skill's reference palette). Used for the Outcome chart's
+     Y/Partial/N, which carries inherent good/warn/bad meaning, not
+     generic categorical identity. */
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  /* log-scenario.html section accents, matching DataDictionary.pdf's 4
+     category colors (approximate -- tune against the PDF directly if the
+     exact hues matter). Used as section accents only, not the site's
+     primary brand color. */
+  --cat-admin: #1f6b4f;
+  --cat-usecase: #9c6f05;
+  --cat-query: #2f8f5b;
+  --cat-outcome: #2a5fa0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,6 +51,10 @@
     --badge-live-bg: #2a2447;
     --badge-live-text: #b7aef2;
     --rank-bg: #242423;
+    --cat-admin: #4fcfa0;
+    --cat-usecase: #e0b23e;
+    --cat-query: #6bd99b;
+    --cat-outcome: #7da8e0;
   }
 }
 
@@ -52,7 +70,7 @@ body {
 }
 
 .page {
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 32px 32px 56px;
 }
@@ -192,6 +210,31 @@ body {
   color: var(--text-muted);
 }
 
+/* ---------- Chart grid ---------- */
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.chart-grid .chart-card {
+  margin-bottom: 0;
+}
+
+/* Charts that need the full row -- the trend line (many x-axis points)
+   and the outcome-by-gap breakdown (a legend + several stacked rows). */
+.chart-span-2 {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 860px) {
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- Chart card ---------- */
 
 .chart-card {
@@ -230,15 +273,16 @@ body {
   padding: 24px 0;
 }
 
-#chart-container {
+#chart-container,
+#outcome-container {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.bar-row {
+.bar-row,
+.outcome-row {
   display: grid;
-  grid-template-columns: 22px minmax(0, 160px) 1fr 40px 44px;
   align-items: center;
   gap: 12px;
   padding: 7px 8px;
@@ -246,13 +290,25 @@ body {
   cursor: pointer;
 }
 
+.bar-row {
+  grid-template-columns: 22px minmax(0, 160px) 1fr 40px 44px;
+}
+
+/* No rank column — outcome is a fixed 3-state scale, not ranked by count. */
+.outcome-row {
+  grid-template-columns: minmax(0, 160px) 1fr 40px 44px;
+}
+
 .bar-row:hover,
-.bar-row:focus-visible {
+.bar-row:focus-visible,
+.outcome-row:hover,
+.outcome-row:focus-visible {
   background: color-mix(in srgb, var(--series-1) 6%, transparent);
   outline: none;
 }
 
-.bar-row:focus-visible {
+.bar-row:focus-visible,
+.outcome-row:focus-visible {
   outline: 2px solid var(--series-1);
   outline-offset: -2px;
 }
@@ -300,6 +356,26 @@ body {
   background: var(--series-1-hover);
 }
 
+/* Outcome carries inherent good/warn/bad meaning, so its fill uses the
+   fixed status palette instead of the brand hue -- never color alone,
+   always paired with the row's own text label. */
+.bar-fill-good {
+  background: var(--status-good);
+}
+
+.bar-fill-warning {
+  background: var(--status-warning);
+}
+
+.bar-fill-critical {
+  background: var(--status-critical);
+}
+
+.outcome-row:hover .bar-fill,
+.outcome-row:focus-visible .bar-fill {
+  filter: brightness(0.88);
+}
+
 .bar-value {
   font-size: 13px;
   font-weight: 600;
@@ -311,6 +387,117 @@ body {
 .bar-pct {
   font-size: 12px;
   color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ---------- Stacked chart (outcome by gap) ---------- */
+
+.stacked-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legend-swatch-good {
+  background: var(--status-good);
+}
+
+.legend-swatch-warning {
+  background: var(--status-warning);
+}
+
+.legend-swatch-critical {
+  background: var(--status-critical);
+}
+
+.stacked-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stacked-row {
+  display: grid;
+  grid-template-columns: minmax(0, 160px) 1fr 40px;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.stacked-row:hover {
+  background: color-mix(in srgb, var(--series-1) 6%, transparent);
+}
+
+.stacked-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.stacked-track {
+  height: 20px;
+  border-radius: 6px;
+  display: flex;
+  gap: 2px; /* the surface-color gap between segments */
+  overflow: hidden;
+}
+
+.stacked-segment {
+  height: 100%;
+  cursor: pointer;
+}
+
+.stacked-segment:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: -2px;
+}
+
+.stacked-segment:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.stacked-segment:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+.stacked-segment-good {
+  background: var(--status-good);
+}
+
+.stacked-segment-warning {
+  background: var(--status-warning);
+}
+
+.stacked-segment-critical {
+  background: var(--status-critical);
+}
+
+.stacked-total {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
@@ -410,17 +597,79 @@ body {
   color: var(--text-muted);
 }
 
-/* ---------- Form (submit.html) ---------- */
+/* ---------- Form (log-scenario.html) ---------- */
 
 .form-card {
-  max-width: 560px;
+  max-width: 960px;
+}
+
+.form-section {
+  border-left: 3px solid transparent;
+  padding-left: 20px;
+  margin-bottom: 28px;
+}
+
+.form-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 14px;
+}
+
+.form-section-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: -8px 0 16px;
+  grid-column: 1 / -1;
+}
+
+/* A 6-column base grid so rows of 2 or 3 fields both land evenly: a plain
+   .form-field spans half a row (3/6, the default); .form-field-third spans
+   a third (2/6, for 3-up rows); .form-field-full spans the whole row. */
+.form-section-fields {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 18px 20px;
+}
+
+@media (max-width: 860px) {
+  .form-section-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .form-field-third {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 520px) {
+  .form-section-fields {
+    grid-template-columns: 1fr;
+  }
+  .form-field-third {
+    grid-column: span 1;
+  }
+}
+
+.form-field-third {
+  grid-column: span 2;
+}
+
+.form-field-full {
+  grid-column: 1 / -1;
+}
+
+/* #outcome-followups wraps a group of conditional fields; when visible its
+   children need to participate directly in the parent .form-section-fields
+   grid (not sit in their own nested box). When JS sets [hidden], the
+   browser's own [hidden] { display: none } default takes over as normal. */
+#outcome-followups:not([hidden]) {
+  display: contents;
 }
 
 .form-field {
+  grid-column: span 3;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 18px;
 }
 
 .form-field label {

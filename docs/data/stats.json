@@ -1,23 +1,89 @@
 {
-  "generated_at": "2026-10-02T18:18:40.612792+00:00",
-  "total_rows": 150,
+  "generated_at": "2026-10-23T21:54:53.439256+00:00",
+  "total_rows": 65,
   "gap_counts": {
-    "Data access / discovery": 47,
-    "Knowledge gap": 29,
-    "Tooling / workflow automation": 26,
-    "Data integration across sources": 16,
-    "Reproducibility": 13,
-    "Unspecified": 11,
-    "Standardization / terminology": 8
+    "Understanding gap": 18,
+    "Decision gap": 15,
+    "Information gap": 11,
+    "Orientation gap": 8,
+    "Production gap": 8,
+    "out of scope": 5
   },
   "monthly_counts": {
-    "2026-03": 24,
-    "2026-04": 19,
-    "2026-05": 24,
-    "2026-06": 20,
-    "2026-07": 31,
-    "2026-08": 25,
-    "2026-09": 5,
-    "2026-10": 2
+    "2026-01": 9,
+    "2026-02": 8,
+    "2026-03": 7,
+    "2026-04": 9,
+    "2026-05": 9,
+    "2026-06": 1,
+    "2026-07": 7,
+    "2026-08": 4,
+    "2026-09": 3,
+    "2026-10": 8
+  },
+  "outcome_counts": {
+    "Y": 38,
+    "N": 11,
+    "Partial": 16
+  },
+  "where_run_counts": {
+    "API (direct)": 23,
+    "UI": 18,
+    "ARAX": 16,
+    "ARS GUI": 8
+  },
+  "query_pattern_counts": {
+    "Mechanistic": 19,
+    "Causal": 18,
+    "Contextual": 16,
+    "Deductive": 12
+  },
+  "keyword_counts": {
+    "adverse event": 13,
+    "therapeutic target": 12,
+    "mechanism of action": 12,
+    "gene-disease association": 12,
+    "pathway analysis": 6,
+    "drug repurposing": 5,
+    "biomarker discovery": 5
+  },
+  "cost_of_error_counts": {
+    "Low": 15,
+    "High consequence": 13,
+    "Moderate": 13,
+    "Critical/irreversible": 12,
+    "Practical impact": 12
+  },
+  "outcome_by_gap": {
+    "Decision gap": {
+      "Y": 9,
+      "Partial": 2,
+      "N": 4
+    },
+    "Understanding gap": {
+      "Y": 10,
+      "Partial": 6,
+      "N": 2
+    },
+    "Orientation gap": {
+      "Y": 5,
+      "Partial": 1,
+      "N": 2
+    },
+    "Information gap": {
+      "Y": 9,
+      "Partial": 2,
+      "N": 0
+    },
+    "Production gap": {
+      "Y": 2,
+      "Partial": 3,
+      "N": 3
+    },
+    "out of scope": {
+      "Y": 3,
+      "Partial": 2,
+      "N": 0
+    }
   }
 }

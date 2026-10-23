@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tool Usage Dashboard</title>
+  <title>QTS Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="page">
     <nav class="tab-bar">
-      <a href="submit.html" class="tab-link">
+      <a href="log-scenario.html" class="tab-link">
         <svg class="tab-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <rect x="3" y="3" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.5"/>
           <path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -30,8 +30,8 @@
       <div class="header-top">
         <span class="badge badge-muted" id="last-updated">Last updated: —</span>
       </div>
-      <h1>Tool Usage Dashboard</h1>
-      <p class="subtitle">Where research teams are hitting gaps, tracked from our metrics sheet</p>
+      <h1>QTS Dashboard</h1>
+      <p class="subtitle">Usage scenarios logged by UEIC members — tracking the gap between what users intended and what Translator delivered</p>
     </header>
 
     <section class="stat-grid" aria-live="polite">
@@ -65,26 +65,91 @@
       </div>
     </section>
 
-    <section class="chart-card">
-      <div class="chart-card-header">
-        <h2>Nature of the gap they want to close</h2>
-        <span class="chart-card-sub">Ranked by number of usage scenarios</span>
-      </div>
-      <div id="chart-empty" class="empty-state" hidden></div>
-      <div id="chart-container"></div>
-    </section>
+    <div class="chart-grid">
 
-    <section class="chart-card">
-      <div class="chart-card-header">
-        <h2>Usage scenarios submitted over time</h2>
-        <span class="chart-card-sub">By month</span>
-      </div>
-      <div id="trend-empty" class="empty-state" hidden></div>
-      <div id="trend-container" class="trend-chart"></div>
-    </section>
+      <section class="chart-card">
+        <div class="chart-card-header">
+          <h2>Nature of the gap they want to close</h2>
+          <span class="chart-card-sub">Ranked by number of usage scenarios</span>
+        </div>
+        <div id="chart-empty" class="empty-state" hidden></div>
+        <div id="chart-container"></div>
+      </section>
+
+      <section class="chart-card">
+        <div class="chart-card-header">
+          <h2>Outcome</h2>
+          <span class="chart-card-sub">Did Translator deliver what the user intended?</span>
+        </div>
+        <div id="outcome-empty" class="empty-state" hidden></div>
+        <div id="outcome-container"></div>
+      </section>
+
+      <section class="chart-card chart-span-2">
+        <div class="chart-card-header">
+          <h2>Usage scenarios submitted over time</h2>
+          <span class="chart-card-sub">By month</span>
+        </div>
+        <div id="trend-empty" class="empty-state" hidden></div>
+        <div id="trend-container" class="trend-chart"></div>
+      </section>
+
+      <section class="chart-card chart-span-2">
+        <div class="chart-card-header">
+          <h2>Outcome by nature of the gap</h2>
+          <span class="chart-card-sub">Where is Translator falling short, and on which kind of gap?</span>
+        </div>
+        <div id="outcome-by-gap-empty" class="empty-state" hidden></div>
+        <div id="outcome-by-gap-container">
+          <div class="stacked-legend">
+            <span class="legend-item"><span class="legend-swatch legend-swatch-good"></span>Successful</span>
+            <span class="legend-item"><span class="legend-swatch legend-swatch-warning"></span>Partially successful</span>
+            <span class="legend-item"><span class="legend-swatch legend-swatch-critical"></span>Not successful</span>
+          </div>
+          <div id="outcome-by-gap-rows" class="stacked-rows"></div>
+        </div>
+      </section>
+
+      <section class="chart-card">
+        <div class="chart-card-header">
+          <h2>Where was the query run?</h2>
+          <span class="chart-card-sub">Ranked by number of usage scenarios</span>
+        </div>
+        <div id="where-run-empty" class="empty-state" hidden></div>
+        <div id="where-run-container"></div>
+      </section>
+
+      <section class="chart-card">
+        <div class="chart-card-header">
+          <h2>Query pattern</h2>
+          <span class="chart-card-sub">Ranked by number of usage scenarios</span>
+        </div>
+        <div id="query-pattern-empty" class="empty-state" hidden></div>
+        <div id="query-pattern-container"></div>
+      </section>
+
+      <section class="chart-card">
+        <div class="chart-card-header">
+          <h2>Keyword</h2>
+          <span class="chart-card-sub">Ranked by number of usage scenarios</span>
+        </div>
+        <div id="keyword-empty" class="empty-state" hidden></div>
+        <div id="keyword-container"></div>
+      </section>
+
+      <section class="chart-card">
+        <div class="chart-card-header">
+          <h2>Cost of an incorrect answer</h2>
+          <span class="chart-card-sub">Ranked by number of usage scenarios</span>
+        </div>
+        <div id="cost-of-error-empty" class="empty-state" hidden></div>
+        <div id="cost-of-error-container"></div>
+      </section>
+
+    </div>
 
     <footer class="page-footer">
-      <span id="data-source-note">Data source: local sample dataset</span>
+      <span id="data-source-note">Data source: QTS-Data (private) — see README for how submissions flow in</span>
     </footer>
   </main>
 

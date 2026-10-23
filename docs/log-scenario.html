@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log a Usage Scenario — QTS Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="tab-bar">
+      <a href="log-scenario.html" class="tab-link is-active">
+        <svg class="tab-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect x="3" y="3" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Log a usage scenario
+      </a>
+      <a href="index.html" class="tab-link">
+        <svg class="tab-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect x="2.5" y="11" width="3.5" height="6.5" rx="1" fill="currentColor"/>
+          <rect x="8.25" y="6" width="3.5" height="11.5" rx="1" fill="currentColor"/>
+          <rect x="14" y="2.5" width="3.5" height="15" rx="1" fill="currentColor"/>
+        </svg>
+        Dashboard
+      </a>
+    </nav>
+
+    <header class="page-header">
+      <h1>Log a usage scenario</h1>
+      <p class="subtitle">
+        Use this form to enter the details for a usage scenario for tracking purposes.
+        Filling this in doesn't save anything yet — the next step opens a pre-filled
+        GitHub issue for you to review and submit (you'll need access to the private
+        QTS-Data repo).
+      </p>
+    </header>
+
+    <section class="chart-card form-card">
+      <form id="scenario-form" novalidate>
+
+        <!-- Administrative information -->
+        <div class="form-section" style="border-left-color: var(--cat-admin)">
+          <h2 class="form-section-title" style="color: var(--cat-admin)">Administrative information</h2>
+          <div class="form-section-fields">
+
+            <div class="form-field form-field-third">
+              <label for="use_case_id">Use case ID</label>
+              <input type="text" id="use_case_id" name="use_case_id" required placeholder="CATRAX-01" />
+            </div>
+
+            <div class="form-field form-field-third">
+              <label for="query_run_date">Query run date (MM/YYYY)</label>
+              <input
+                type="text"
+                id="query_run_date"
+                name="query_run_date"
+                required
+                placeholder="06/2026"
+                pattern="^(0[1-9]|1[0-2])/\d{4}$"
+              />
+            </div>
+
+            <div class="form-field form-field-third">
+              <label for="facilitator">Facilitator (optional)</label>
+              <input type="text" id="facilitator" name="facilitator" />
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Use-case description -->
+        <div class="form-section" style="border-left-color: var(--cat-usecase)">
+          <h2 class="form-section-title" style="color: var(--cat-usecase)">Use-case description</h2>
+          <div class="form-section-fields">
+
+            <div class="form-field">
+              <label for="keyword">Keyword (optional)</label>
+              <input type="text" id="keyword" name="keyword" placeholder="therapeutic target" />
+            </div>
+
+            <div class="form-field">
+              <label for="nature_of_gap">Nature of the gap they want to close</label>
+              <select id="nature_of_gap" name="nature_of_gap" required>
+                <option value="" disabled selected>Choose one…</option>
+                <option>0 - out of scope</option>
+                <option>1 - Information gap</option>
+                <option>2 - Understanding gap</option>
+                <option>3 - Decision gap</option>
+                <option>4 - Production gap</option>
+                <option>5 - Orientation gap</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="intent">Intent</label>
+              <textarea
+                id="intent"
+                name="intent"
+                rows="2"
+                required
+                placeholder="Find direct actionable targets of biological mechanisms involved in disease X."
+              ></textarea>
+            </div>
+
+            <div class="form-field">
+              <label for="expected_outcome">Expected outcome(s) - satisfaction</label>
+              <textarea
+                id="expected_outcome"
+                name="expected_outcome"
+                rows="2"
+                required
+                placeholder="A ranked list of candidate entities with a confirmed mechanistic role."
+              ></textarea>
+            </div>
+
+            <div class="form-field form-field-third">
+              <label for="internal_model_structure">How structured their internal model is before asking (optional)</label>
+              <select id="internal_model_structure" name="internal_model_structure">
+                <option value="" selected>Choose one…</option>
+                <option>1 - Undefined</option>
+                <option>2 - Broad</option>
+                <option>3 - Structured</option>
+                <option>4 - Constrained</option>
+                <option>5 - Hypothesis-driven</option>
+              </select>
+            </div>
+
+            <div class="form-field form-field-third">
+              <label for="cognitive_effort">Desired distribution of cognitive effort (optional)</label>
+              <select id="cognitive_effort" name="cognitive_effort">
+                <option value="" selected>Choose one…</option>
+                <option>1 - Stimulus only</option>
+                <option>2 - Co-thinking</option>
+                <option>3 - Guided support</option>
+                <option>4 - Delegated reasoning</option>
+                <option>5 - Full delegation</option>
+              </select>
+            </div>
+
+            <div class="form-field form-field-third">
+              <label for="cost_of_error">What is the cost of an incorrect answer (optional)</label>
+              <select id="cost_of_error" name="cost_of_error">
+                <option value="" selected>Choose one…</option>
+                <option>1 - Low</option>
+                <option>2 - Moderate</option>
+                <option>3 - Practical impact</option>
+                <option>4 - High consequence</option>
+                <option>5 - Critical/irreversible</option>
+              </select>
+            </div>
+
+            <div class="form-field form-field-full">
+              <label for="knowledge_sources">Knowledge sources end users would turn to (optional)</label>
+              <textarea id="knowledge_sources" name="knowledge_sources" rows="2"></textarea>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Query info -->
+        <div class="form-section" style="border-left-color: var(--cat-query)">
+          <h2 class="form-section-title" style="color: var(--cat-query)">Query info</h2>
+          <div class="form-section-fields">
+
+            <div class="form-field">
+              <label for="input_nodes">Input node(s)</label>
+              <input type="text" id="input_nodes" name="input_nodes" required placeholder="BRCA2" />
+            </div>
+
+            <div class="form-field">
+              <label for="output_nodes">Output node(s)</label>
+              <input type="text" id="output_nodes" name="output_nodes" required />
+            </div>
+
+            <div class="form-field form-field-third">
+              <label for="input_node_categories">Input node(s) categorie(s) (optional)</label>
+              <input type="text" id="input_node_categories" name="input_node_categories" placeholder="biolink:Gene; biolink:Protein" />
+            </div>
+
+            <div class="form-field form-field-third">
+              <label for="output_node_categories">Output node(s) categorie(s) (optional)</label>
+              <input type="text" id="output_node_categories" name="output_node_categories" />
+            </div>
+
+            <div class="form-field form-field-third">
+              <label for="predicates">Predicates (optional)</label>
+              <input type="text" id="predicates" name="predicates" placeholder="biolink:interacts_with" />
+            </div>
+
+            <div class="form-field">
+              <label for="query_pattern">Query pattern (optional)</label>
+              <select id="query_pattern" name="query_pattern">
+                <option value="" selected>Choose one…</option>
+                <option>1 - Deductive</option>
+                <option>2 - Causal</option>
+                <option>3 - Mechanistic</option>
+                <option>4 - Contextual</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="where_run">Where was the query run?</label>
+              <input type="text" id="where_run" name="where_run" required placeholder="UI" />
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Outcome -->
+        <div class="form-section" style="border-left-color: var(--cat-outcome)">
+          <h2 class="form-section-title" style="color: var(--cat-outcome)">Outcome</h2>
+          <div class="form-section-fields">
+
+            <div class="form-field">
+              <label for="outcome">Outcome</label>
+              <select id="outcome" name="outcome" required>
+                <option value="" disabled selected>Choose one…</option>
+                <option>Y</option>
+                <option>Partial</option>
+                <option>N</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="nodes_of_interest">Any particular nodes of interest? (optional)</label>
+              <input type="text" id="nodes_of_interest" name="nodes_of_interest" />
+            </div>
+
+            <div id="outcome-followups" hidden>
+              <p class="form-section-note">
+                The fields below are about what went wrong — fill them in since the
+                outcome above wasn't fully successful.
+              </p>
+
+              <div class="form-field">
+                <label for="nodes_of_non_interest">Any particular nodes of non interest (must not show)?</label>
+                <input type="text" id="nodes_of_non_interest" name="nodes_of_non_interest" />
+              </div>
+
+              <div class="form-field">
+                <label for="system_functioning_level">Translator system functioning level for need</label>
+                <input type="text" id="system_functioning_level" name="system_functioning_level" placeholder="grouping" />
+              </div>
+
+              <div class="form-field">
+                <label for="workaround_existing">Is a workaround existing? (indicate the development stage)</label>
+                <input type="text" id="workaround_existing" name="workaround_existing" placeholder="not implemented yet" />
+              </div>
+
+              <div class="form-field">
+                <label for="github_issue_link">GitHub issue link (separate dev-team issue, not this submission)</label>
+                <input type="url" id="github_issue_link" name="github_issue_link" placeholder="https://github.com/…" />
+              </div>
+
+              <div class="form-field form-field-full">
+                <label for="explanation_of_need">Explanation of the need</label>
+                <textarea id="explanation_of_need" name="explanation_of_need" rows="2"></textarea>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div id="form-message" class="form-message" hidden></div>
+
+        <button type="submit" class="form-submit">Review &amp; submit on GitHub</button>
+      </form>
+    </section>
+
+    <footer class="page-footer">
+      <span>Opens a pre-filled issue on the private QTS-Data repo — you review and submit it there.</span>
+    </footer>
+  </main>
+
+  <script src="log-scenario.js"></script>
+</body>
+</html>

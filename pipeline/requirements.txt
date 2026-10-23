@@ -1,6 +1,0 @@
-pandas==2.2.3
-
-# Only needed once DATA_SOURCE=google_sheets is wired up (see README's
-# "Connecting the real sheet later" section) — uncomment then:
-# gspread==6.1.4
-# google-auth==2.35.0

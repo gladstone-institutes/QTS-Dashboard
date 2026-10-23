@@ -62,7 +62,8 @@ docs/                               # the GitHub Pages site -- the entirety of t
 Only aggregate numbers (`total_rows`, `gap_counts`, `monthly_counts`,
 `outcome_counts`, `where_run_counts`, `query_pattern_counts`,
 `keyword_counts`, `cost_of_error_counts`, `outcome_by_gap`) are ever
-written to `docs/data/stats.json`. No query text, use-case IDs,
-facilitator names, or any other row-level field is ever computed or
-stored here — see `QTS-Data`'s README and `scripts/process_submission.py`
+written to `docs/data/stats.json`, plus one deliberate exception: the list
+of distinct use case IDs (`use_case_ids`), which the log-scenario form
+offers as a dropdown. No query text, facilitator names, or any other
+row-level field is ever computed or stored here — see `QTS-Data`'s README and `scripts/process_submission.py`
 for where that boundary is enforced.

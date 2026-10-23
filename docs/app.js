@@ -60,13 +60,13 @@ async function loadStats() {
   if (entries.length === 0) {
     topCategoryEl.textContent = "—";
     emptyEl.textContent =
-      "No data yet — the dashboard refreshes automatically once a day.";
+      "No data yet — this updates each time a usage scenario is logged.";
     emptyEl.hidden = false;
   } else {
     const [topLabel, topValue] = entries[0];
     topCategoryEl.textContent = topLabel;
     const topPct = totalRows > 0 ? Math.round((topValue / totalRows) * 100) : 0;
-    topCategoryPctEl.textContent = `${topPct}% of all usage scenarios`;
+    topCategoryPctEl.textContent = `${topPct}% of all logged queries`;
 
     renderBarChart(containerEl, entries, totalRows);
   }
@@ -79,7 +79,7 @@ async function loadStats() {
     const [topPlatform, topPlatformValue] = platformEntries[0];
     document.getElementById("top-platform").textContent = topPlatform;
     const platformPct = totalRows > 0 ? Math.round((topPlatformValue / totalRows) * 100) : 0;
-    document.getElementById("top-platform-pct").textContent = `${platformPct}% of all usage scenarios`;
+    document.getElementById("top-platform-pct").textContent = `${platformPct}% of all logged queries`;
   }
 
   // Monthly trend chart — independent dataset from the bar chart above, so
@@ -90,7 +90,7 @@ async function loadStats() {
 
   if (monthEntries.length === 0) {
     trendEmptyEl.textContent =
-      "No data yet — the dashboard refreshes automatically once a day.";
+      "No data yet — this updates each time a usage scenario is logged.";
     trendEmptyEl.hidden = false;
   } else {
     renderTrendChart(trendContainerEl, monthEntries);
@@ -118,7 +118,7 @@ async function loadStats() {
 
   if (outcomeTotal === 0) {
     outcomeEmptyEl.textContent =
-      "No data yet — the dashboard refreshes automatically once a day.";
+      "No data yet — this updates each time a usage scenario is logged.";
     outcomeEmptyEl.hidden = false;
   } else {
     renderOutcomeChart(outcomeContainerEl, outcomeCounts, outcomeTotal);
@@ -139,7 +139,7 @@ async function loadStats() {
 
   if (Object.keys(outcomeByGap).length === 0) {
     outcomeByGapEmptyEl.textContent =
-      "No data yet — the dashboard refreshes automatically once a day.";
+      "No data yet — this updates each time a usage scenario is logged.";
     outcomeByGapEmptyEl.hidden = false;
   } else {
     renderStackedChart(outcomeByGapRowsEl, outcomeByGap);
@@ -155,7 +155,7 @@ async function loadStats() {
   if (costTotal === 0) {
     costContainerEl.hidden = true;
     costEmptyEl.textContent =
-      "No data yet — the dashboard refreshes automatically once a day.";
+      "No data yet — this updates each time a usage scenario is logged.";
     costEmptyEl.hidden = false;
   } else {
     renderDivergingChart(
@@ -166,7 +166,7 @@ async function loadStats() {
     const unspecified = stats.cost_of_error_unspecified || 0;
     if (unspecified > 0) {
       const noteEl = document.getElementById("cost-of-error-note");
-      noteEl.textContent = `${unspecified} usage scenario${unspecified === 1 ? "" : "s"} with no cost recorded ${unspecified === 1 ? "is" : "are"} left out.`;
+      noteEl.textContent = `${unspecified} quer${unspecified === 1 ? "y" : "ies"} with no cost recorded ${unspecified === 1 ? "is" : "are"} left out.`;
       noteEl.hidden = false;
     }
   }
@@ -176,7 +176,7 @@ async function loadStats() {
   const keywordEntries = Object.entries(stats.keyword_counts || {});
   if (keywordEntries.length === 0) {
     keywordEmptyEl.textContent =
-      "No data yet — the dashboard refreshes automatically once a day.";
+      "No data yet — this updates each time a usage scenario is logged.";
     keywordEmptyEl.hidden = false;
   } else {
     renderWordCloud(document.getElementById("keyword-container"), keywordEntries);
@@ -188,7 +188,7 @@ async function loadStats() {
 
   if (Object.keys(patternByGap).length === 0) {
     patternByGapEmptyEl.textContent =
-      "No data yet — the dashboard refreshes automatically once a day.";
+      "No data yet — this updates each time a usage scenario is logged.";
     patternByGapEmptyEl.hidden = false;
   } else {
     renderHeatmap(document.getElementById("pattern-by-gap-container"), patternByGap);
@@ -427,7 +427,7 @@ function renderDivergingChart(container, overallCounts, countsByGap) {
   container.replaceChildren();
 
   const rowTotal = (counts) => COST_ORDER.reduce((sum, key) => sum + (counts[key] || 0), 0);
-  const rows = [["All usage scenarios", overallCounts, true]].concat(
+  const rows = [["All queries", overallCounts, true]].concat(
     Object.entries(countsByGap)
       .filter(([, counts]) => rowTotal(counts) > 0)
       .sort((a, b) => rowTotal(b[1]) - rowTotal(a[1]))
@@ -574,7 +574,7 @@ function renderPieField(stats, fieldKey, containerId, emptyId, fixedOrder) {
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
 
   if (total === 0) {
-    emptyEl.textContent = "No data yet — the dashboard refreshes automatically once a day.";
+    emptyEl.textContent = "No data yet — this updates each time a usage scenario is logged.";
     emptyEl.hidden = false;
     return;
   }

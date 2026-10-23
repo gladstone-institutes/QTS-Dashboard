@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T21:54:53.439256+00:00",
+  "generated_at": "2026-10-23T23:36:07.911915+00:00",
   "total_rows": 65,
   "gap_counts": {
     "Understanding gap": 18,
@@ -85,5 +85,131 @@
       "Partial": 2,
       "N": 0
     }
-  }
+  },
+  "cost_of_error_by_gap": {
+    "Decision gap": {
+      "Low": 3,
+      "Moderate": 2,
+      "Practical impact": 4,
+      "High consequence": 3,
+      "Critical/irreversible": 3
+    },
+    "Understanding gap": {
+      "Low": 5,
+      "Moderate": 2,
+      "Practical impact": 3,
+      "High consequence": 5,
+      "Critical/irreversible": 3
+    },
+    "Orientation gap": {
+      "Low": 1,
+      "Moderate": 3,
+      "Practical impact": 2,
+      "High consequence": 1,
+      "Critical/irreversible": 1
+    },
+    "Information gap": {
+      "Low": 3,
+      "Moderate": 3,
+      "Practical impact": 1,
+      "High consequence": 2,
+      "Critical/irreversible": 2
+    },
+    "Production gap": {
+      "Low": 1,
+      "Moderate": 2,
+      "Practical impact": 1,
+      "High consequence": 2,
+      "Critical/irreversible": 2
+    },
+    "out of scope": {
+      "Low": 2,
+      "Moderate": 1,
+      "Practical impact": 1,
+      "High consequence": 0,
+      "Critical/irreversible": 1
+    }
+  },
+  "cost_of_error_unspecified": 0,
+  "query_pattern_by_gap": {
+    "Decision gap": {
+      "Mechanistic": 7,
+      "Causal": 4,
+      "Deductive": 2,
+      "Contextual": 2
+    },
+    "Understanding gap": {
+      "Causal": 2,
+      "Mechanistic": 6,
+      "Deductive": 2,
+      "Contextual": 8
+    },
+    "Orientation gap": {
+      "Causal": 4,
+      "Deductive": 1,
+      "Mechanistic": 2,
+      "Contextual": 1
+    },
+    "Information gap": {
+      "Deductive": 3,
+      "Causal": 3,
+      "Contextual": 3,
+      "Mechanistic": 2
+    },
+    "Production gap": {
+      "Causal": 3,
+      "Deductive": 3,
+      "Contextual": 2
+    },
+    "out of scope": {
+      "Mechanistic": 2,
+      "Deductive": 1,
+      "Causal": 2
+    }
+  },
+  "use_case_ids": [
+    "CARDIO-01",
+    "CARDIO-02",
+    "CARDIO-04",
+    "CARDIO-05",
+    "CARDIO-07",
+    "CARDIO-08",
+    "CARDIO-09",
+    "CARDIO-10",
+    "CARDIO-11",
+    "CARDIO-12",
+    "CATRAX-01",
+    "CATRAX-02",
+    "CATRAX-03",
+    "CATRAX-04",
+    "CATRAX-05",
+    "CATRAX-06",
+    "CATRAX-08",
+    "CATRAX-09",
+    "CATRAX-11",
+    "CATRAX-12",
+    "IMMUNO-02",
+    "IMMUNO-04",
+    "IMMUNO-05",
+    "IMMUNO-06",
+    "IMMUNO-07",
+    "IMMUNO-09",
+    "IMMUNO-10",
+    "IMMUNO-11",
+    "NEURO-03",
+    "NEURO-04",
+    "NEURO-09",
+    "NEURO-10",
+    "ONCO-01",
+    "ONCO-02",
+    "ONCO-03",
+    "ONCO-04",
+    "ONCO-05",
+    "ONCO-06",
+    "ONCO-07",
+    "ONCO-08",
+    "ONCO-09",
+    "ONCO-10",
+    "ONCO-12"
+  ]
 }

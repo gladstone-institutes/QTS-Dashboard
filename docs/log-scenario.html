@@ -38,18 +38,37 @@
 
     <section class="chart-card form-card">
       <form id="scenario-form" novalidate>
+        <p class="form-required-note"><span class="required-mark">*</span> Required</p>
 
         <!-- Administrative information -->
         <div class="form-section" style="border-left-color: var(--cat-admin)">
           <h2 class="form-section-title" style="color: var(--cat-admin)">Administrative information</h2>
           <div class="form-section-fields">
 
-            <div class="form-field form-field-third">
-              <label for="use_case_id">Use case ID</label>
-              <input type="text" id="use_case_id" name="use_case_id" required placeholder="CATRAX-01" />
+            <div class="form-field">
+              <label for="query_pk">Query PK</label>
+              <input
+                type="text"
+                id="query_pk"
+                name="query_pk"
+                placeholder="Leave blank to auto-generate"
+                pattern="^[A-Za-z0-9\-]+$"
+                title="Letters, numbers and hyphens only"
+              />
             </div>
 
-            <div class="form-field form-field-third">
+            <!-- Neither control carries name="use_case_id": log-scenario.js
+                 sets that param from whichever one is in use. -->
+            <div class="form-field">
+              <label for="use_case_id_select">Use case ID</label>
+              <select id="use_case_id_select" required>
+                <option value="" disabled selected>Choose one…</option>
+                <option value="__new__">+ Add a new use case ID…</option>
+              </select>
+              <input type="text" id="use_case_id_new" placeholder="New use case ID, e.g. CATRAX-03" hidden />
+            </div>
+
+            <div class="form-field">
               <label for="query_run_date">Query run date (MM/YYYY)</label>
               <input
                 type="text"
@@ -61,8 +80,8 @@
               />
             </div>
 
-            <div class="form-field form-field-third">
-              <label for="facilitator">Facilitator (optional)</label>
+            <div class="form-field">
+              <label for="facilitator">Facilitator</label>
               <input type="text" id="facilitator" name="facilitator" />
             </div>
 
@@ -75,7 +94,7 @@
           <div class="form-section-fields">
 
             <div class="form-field">
-              <label for="keyword">Keyword (optional)</label>
+              <label for="keyword">Keyword</label>
               <input type="text" id="keyword" name="keyword" placeholder="therapeutic target" />
             </div>
 
@@ -115,7 +134,7 @@
             </div>
 
             <div class="form-field form-field-third">
-              <label for="internal_model_structure">How structured their internal model is before asking (optional)</label>
+              <label for="internal_model_structure">How structured their internal model is before asking</label>
               <select id="internal_model_structure" name="internal_model_structure">
                 <option value="" selected>Choose one…</option>
                 <option>1 - Undefined</option>
@@ -127,7 +146,7 @@
             </div>
 
             <div class="form-field form-field-third">
-              <label for="cognitive_effort">Desired distribution of cognitive effort (optional)</label>
+              <label for="cognitive_effort">Desired distribution of cognitive effort</label>
               <select id="cognitive_effort" name="cognitive_effort">
                 <option value="" selected>Choose one…</option>
                 <option>1 - Stimulus only</option>
@@ -139,7 +158,7 @@
             </div>
 
             <div class="form-field form-field-third">
-              <label for="cost_of_error">What is the cost of an incorrect answer (optional)</label>
+              <label for="cost_of_error">What is the cost of an incorrect answer</label>
               <select id="cost_of_error" name="cost_of_error">
                 <option value="" selected>Choose one…</option>
                 <option>1 - Low</option>
@@ -151,7 +170,7 @@
             </div>
 
             <div class="form-field form-field-full">
-              <label for="knowledge_sources">Knowledge sources end users would turn to (optional)</label>
+              <label for="knowledge_sources">Knowledge sources end users would turn to</label>
               <textarea id="knowledge_sources" name="knowledge_sources" rows="2"></textarea>
             </div>
 
@@ -174,22 +193,22 @@
             </div>
 
             <div class="form-field form-field-third">
-              <label for="input_node_categories">Input node(s) categorie(s) (optional)</label>
+              <label for="input_node_categories">Input node(s) categorie(s)</label>
               <input type="text" id="input_node_categories" name="input_node_categories" placeholder="biolink:Gene; biolink:Protein" />
             </div>
 
             <div class="form-field form-field-third">
-              <label for="output_node_categories">Output node(s) categorie(s) (optional)</label>
+              <label for="output_node_categories">Output node(s) categorie(s)</label>
               <input type="text" id="output_node_categories" name="output_node_categories" />
             </div>
 
             <div class="form-field form-field-third">
-              <label for="predicates">Predicates (optional)</label>
+              <label for="predicates">Predicates</label>
               <input type="text" id="predicates" name="predicates" placeholder="biolink:interacts_with" />
             </div>
 
             <div class="form-field">
-              <label for="query_pattern">Query pattern (optional)</label>
+              <label for="query_pattern">Query pattern</label>
               <select id="query_pattern" name="query_pattern">
                 <option value="" selected>Choose one…</option>
                 <option>1 - Deductive</option>
@@ -223,7 +242,7 @@
             </div>
 
             <div class="form-field">
-              <label for="nodes_of_interest">Any particular nodes of interest? (optional)</label>
+              <label for="nodes_of_interest">Any particular nodes of interest?</label>
               <input type="text" id="nodes_of_interest" name="nodes_of_interest" />
             </div>
 

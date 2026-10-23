@@ -11,6 +11,7 @@ const CHART_EMPTY_IDS = [
   "query-pattern-empty",
   "keyword-empty",
   "cost-of-error-empty",
+  "pattern-by-gap-empty",
 ];
 
 function showAllEmptyStates(message) {
@@ -23,7 +24,6 @@ function showAllEmptyStates(message) {
 
 async function loadStats() {
   const totalEl = document.getElementById("total-rows");
-  const categoryCountEl = document.getElementById("category-count");
   const topCategoryEl = document.getElementById("top-category");
   const topCategoryPctEl = document.getElementById("top-category-pct");
   const updatedEl = document.getElementById("last-updated");
@@ -58,20 +58,28 @@ async function loadStats() {
   );
 
   if (entries.length === 0) {
-    categoryCountEl.textContent = "0";
     topCategoryEl.textContent = "—";
     emptyEl.textContent =
       "No data yet — the dashboard refreshes automatically once a day.";
     emptyEl.hidden = false;
   } else {
-    categoryCountEl.textContent = entries.length.toLocaleString();
-
     const [topLabel, topValue] = entries[0];
     topCategoryEl.textContent = topLabel;
     const topPct = totalRows > 0 ? Math.round((topValue / totalRows) * 100) : 0;
     topCategoryPctEl.textContent = `${topPct}% of all usage scenarios`;
 
     renderBarChart(containerEl, entries, totalRows);
+  }
+
+  // Most common platform tile -- same shape as the most-common-gap tile.
+  const platformEntries = Object.entries(stats.where_run_counts || {}).sort(
+    (a, b) => b[1] - a[1]
+  );
+  if (platformEntries.length > 0) {
+    const [topPlatform, topPlatformValue] = platformEntries[0];
+    document.getElementById("top-platform").textContent = topPlatform;
+    const platformPct = totalRows > 0 ? Math.round((topPlatformValue / totalRows) * 100) : 0;
+    document.getElementById("top-platform-pct").textContent = `${platformPct}% of all usage scenarios`;
   }
 
   // Monthly trend chart — independent dataset from the bar chart above, so
@@ -86,6 +94,20 @@ async function loadStats() {
     trendEmptyEl.hidden = false;
   } else {
     renderTrendChart(trendContainerEl, monthEntries);
+    // The SVG is drawn at the container's real pixel width (so text and
+    // strokes stay 1:1 instead of scaling up with the card) -- redraw it
+    // when that width changes.
+    let lastWidth = trendContainerEl.clientWidth;
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (trendContainerEl.clientWidth !== lastWidth) {
+          lastWidth = trendContainerEl.clientWidth;
+          renderTrendChart(trendContainerEl, monthEntries);
+        }
+      }, 150);
+    });
   }
 
   // Outcome breakdown — a fixed-order 3-state scale (not ranked by count,
@@ -102,12 +124,11 @@ async function loadStats() {
     renderOutcomeChart(outcomeContainerEl, outcomeCounts, outcomeTotal);
   }
 
-  // Four more simple ranked-bar breakdowns — same shape as the gap-nature
-  // chart above, just a different field each time.
-  renderSimpleBarField(stats, "where_run_counts", "where-run-container", "where-run-empty");
-  renderSimpleBarField(stats, "query_pattern_counts", "query-pattern-container", "query-pattern-empty");
-  renderSimpleBarField(stats, "keyword_counts", "keyword-container", "keyword-empty");
-  renderSimpleBarField(stats, "cost_of_error_counts", "cost-of-error-container", "cost-of-error-empty");
+  // Two pie charts. Query pattern is a fixed 4-value scale, so each pattern
+  // keeps its own color whatever its count; "where run" is free text, so
+  // it's ranked by count instead.
+  renderPieField(stats, "where_run_counts", "where-run-container", "where-run-empty", null);
+  renderPieField(stats, "query_pattern_counts", "query-pattern-container", "query-pattern-empty", PATTERN_ORDER);
 
   // Outcome by gap — the combined view: within each gap type, how often did
   // Translator actually deliver? This is the direct "intent vs. output"
@@ -123,22 +144,54 @@ async function loadStats() {
   } else {
     renderStackedChart(outcomeByGapRowsEl, outcomeByGap);
   }
-}
 
-// Shared by the four simple ranked-bar charts added after the gap-nature
-// chart: pulls `stats[fieldKey]`, sorts by count, and renders (or shows the
-// empty state) into the given container/empty element ids.
-function renderSimpleBarField(stats, fieldKey, containerId, emptyId) {
-  const containerEl = document.getElementById(containerId);
-  const emptyEl = document.getElementById(emptyId);
-  const entries = Object.entries(stats[fieldKey] || {}).sort((a, b) => b[1] - a[1]);
-  const total = entries.reduce((sum, [, v]) => sum + v, 0);
+  // Cost of an incorrect answer -- diverging bar, overall + per gap type.
+  const costEmptyEl = document.getElementById("cost-of-error-empty");
+  const costContainerEl = document.getElementById("cost-of-error-container");
+  const costOverall = { ...(stats.cost_of_error_counts || {}) };
+  delete costOverall.Unspecified;
+  const costTotal = COST_ORDER.reduce((sum, key) => sum + (costOverall[key] || 0), 0);
 
-  if (entries.length === 0) {
-    emptyEl.textContent = "No data yet — the dashboard refreshes automatically once a day.";
-    emptyEl.hidden = false;
+  if (costTotal === 0) {
+    costContainerEl.hidden = true;
+    costEmptyEl.textContent =
+      "No data yet — the dashboard refreshes automatically once a day.";
+    costEmptyEl.hidden = false;
   } else {
-    renderBarChart(containerEl, entries, total);
+    renderDivergingChart(
+      document.getElementById("cost-of-error-rows"),
+      costOverall,
+      stats.cost_of_error_by_gap || {}
+    );
+    const unspecified = stats.cost_of_error_unspecified || 0;
+    if (unspecified > 0) {
+      const noteEl = document.getElementById("cost-of-error-note");
+      noteEl.textContent = `${unspecified} usage scenario${unspecified === 1 ? "" : "s"} with no cost recorded ${unspecified === 1 ? "is" : "are"} left out.`;
+      noteEl.hidden = false;
+    }
+  }
+
+  // Keyword word cloud.
+  const keywordEmptyEl = document.getElementById("keyword-empty");
+  const keywordEntries = Object.entries(stats.keyword_counts || {});
+  if (keywordEntries.length === 0) {
+    keywordEmptyEl.textContent =
+      "No data yet — the dashboard refreshes automatically once a day.";
+    keywordEmptyEl.hidden = false;
+  } else {
+    renderWordCloud(document.getElementById("keyword-container"), keywordEntries);
+  }
+
+  // Query pattern x gap heatmap.
+  const patternByGapEmptyEl = document.getElementById("pattern-by-gap-empty");
+  const patternByGap = stats.query_pattern_by_gap || {};
+
+  if (Object.keys(patternByGap).length === 0) {
+    patternByGapEmptyEl.textContent =
+      "No data yet — the dashboard refreshes automatically once a day.";
+    patternByGapEmptyEl.hidden = false;
+  } else {
+    renderHeatmap(document.getElementById("pattern-by-gap-container"), patternByGap);
   }
 }
 
@@ -356,6 +409,314 @@ function renderStackedChart(container, outcomeByGap) {
   });
 }
 
+// Cost of an incorrect answer is a 5-step scale with a neutral midpoint,
+// so it's drawn as a diverging bar: Low/Moderate extend left of a center
+// line, High/Critical extend right, and "Practical impact" straddles the
+// center (half on each side). Widths are % of each row's own total, so
+// rows of different sizes compare directly.
+const COST_ORDER = [
+  "Low",
+  "Moderate",
+  "Practical impact",
+  "High consequence",
+  "Critical/irreversible",
+];
+const COST_MIDPOINT = "Practical impact";
+
+function renderDivergingChart(container, overallCounts, countsByGap) {
+  container.replaceChildren();
+
+  const rowTotal = (counts) => COST_ORDER.reduce((sum, key) => sum + (counts[key] || 0), 0);
+  const rows = [["All usage scenarios", overallCounts, true]].concat(
+    Object.entries(countsByGap)
+      .filter(([, counts]) => rowTotal(counts) > 0)
+      .sort((a, b) => rowTotal(b[1]) - rowTotal(a[1]))
+      .map(([label, counts]) => [label, counts, false])
+  );
+
+  // One shared scale: the widest single side across all rows fills its
+  // half of the track, so the center line lines up for every row.
+  const sideShares = (counts) => {
+    const total = rowTotal(counts);
+    const mid = (counts[COST_MIDPOINT] || 0) / 2;
+    return [
+      ((counts.Low || 0) + (counts.Moderate || 0) + mid) / total,
+      ((counts["High consequence"] || 0) + (counts["Critical/irreversible"] || 0) + mid) / total,
+    ];
+  };
+  const halfMax = Math.max(...rows.map(([, counts]) => Math.max(...sideShares(counts))));
+
+  rows.forEach(([label, counts, isOverall]) => {
+    const total = rowTotal(counts);
+
+    const row = document.createElement("div");
+    row.className = isOverall ? "diverging-row diverging-row-overall" : "diverging-row";
+
+    const labelEl = document.createElement("span");
+    labelEl.className = "stacked-label";
+    labelEl.textContent = label;
+    labelEl.title = label;
+
+    const track = document.createElement("div");
+    track.className = "diverging-track";
+    const left = document.createElement("div");
+    left.className = "diverging-half diverging-half-left";
+    const right = document.createElement("div");
+    right.className = "diverging-half diverging-half-right";
+
+    const addSegment = (half, key, value) => {
+      if (value <= 0) return;
+      const fullValue = counts[key] || 0;
+      const pct = Math.round((fullValue / total) * 100);
+      const segment = document.createElement("div");
+      segment.className = `diverging-segment diverging-${COST_ORDER.indexOf(key) + 1}`;
+      segment.style.width = `${(value / total / halfMax) * 100}%`;
+      segment.tabIndex = 0;
+      half.appendChild(segment);
+      attachRowTooltip(segment, container, `${fullValue} (${pct}%)`, `${label} — ${key}`);
+    };
+
+    const mid = (counts[COST_MIDPOINT] || 0) / 2;
+    addSegment(left, "Low", counts.Low || 0);
+    addSegment(left, "Moderate", counts.Moderate || 0);
+    addSegment(left, COST_MIDPOINT, mid);
+    addSegment(right, COST_MIDPOINT, mid);
+    addSegment(right, "High consequence", counts["High consequence"] || 0);
+    addSegment(right, "Critical/irreversible", counts["Critical/irreversible"] || 0);
+
+    track.appendChild(left);
+    track.appendChild(right);
+
+    const totalEl = document.createElement("span");
+    totalEl.className = "stacked-total";
+    totalEl.textContent = total;
+
+    row.appendChild(labelEl);
+    row.appendChild(track);
+    row.appendChild(totalEl);
+    container.appendChild(row);
+  });
+}
+
+// Query pattern x gap -- a count heatmap. Columns in the scale's own order
+// (not by count). Cell shade is one of 5 steps of the brand purple
+// (--heat-1..5, matching the legend above the grid); every cell also
+// prints its number, so shade is never the only encoding.
+const HEAT_STEPS = 5;
+const PATTERN_ORDER = ["Deductive", "Causal", "Mechanistic", "Contextual", "Unspecified"];
+
+function renderHeatmap(container, patternByGap) {
+  container.replaceChildren();
+
+  const columns = PATTERN_ORDER.filter((pattern) =>
+    Object.values(patternByGap).some((counts) => (counts[pattern] || 0) > 0)
+  );
+  const rowTotal = (counts) => columns.reduce((sum, p) => sum + (counts[p] || 0), 0);
+  const rows = Object.entries(patternByGap).sort((a, b) => rowTotal(b[1]) - rowTotal(a[1]));
+  const maxValue = Math.max(
+    ...rows.flatMap(([, counts]) => columns.map((p) => counts[p] || 0))
+  );
+
+  const grid = document.createElement("div");
+  grid.className = "heatmap";
+  grid.style.gridTemplateColumns = `minmax(120px, 160px) repeat(${columns.length}, minmax(64px, 1fr)) 48px`;
+
+  const addCell = (className, text) => {
+    const cell = document.createElement("div");
+    cell.className = className;
+    cell.textContent = text;
+    grid.appendChild(cell);
+    return cell;
+  };
+
+  addCell("heatmap-corner", "");
+  columns.forEach((p) => addCell("heatmap-col-label", p));
+  addCell("heatmap-col-label heatmap-total-label", "Total");
+
+  rows.forEach(([gapLabel, counts]) => {
+    const labelCell = addCell("heatmap-row-label", gapLabel);
+    labelCell.title = gapLabel;
+
+    columns.forEach((pattern) => {
+      const value = counts[pattern] || 0;
+      const cell = addCell("heatmap-cell", value > 0 ? value : "");
+      if (value > 0) {
+        const step = Math.max(1, Math.ceil((value / maxValue) * HEAT_STEPS));
+        cell.classList.add(`heat-${step}`);
+        cell.tabIndex = 0;
+        attachRowTooltip(cell, container, `${value}`, `${gapLabel} — ${pattern}`);
+      }
+    });
+
+    addCell("heatmap-row-total", rowTotal(counts));
+  });
+
+  addCell("heatmap-row-label heatmap-total-label", "Total");
+  columns.forEach((pattern) =>
+    addCell("heatmap-row-total", rows.reduce((sum, [, counts]) => sum + (counts[pattern] || 0), 0))
+  );
+  addCell("heatmap-row-total", rows.reduce((sum, [, counts]) => sum + rowTotal(counts), 0));
+
+  container.appendChild(grid);
+}
+
+// Pie chart + legend. At most PIE_COLORS.length named slices; anything
+// past that (and "Unspecified") folds into one gray slice so no color is
+// ever generated or reused. Slices start at 12 o'clock, clockwise, with a
+// 2px surface-colored stroke between them.
+const PIE_COLORS = ["var(--pie-1)", "var(--pie-2)", "var(--pie-3)", "var(--pie-4)"];
+const PIE_OTHER_COLOR = "var(--pie-other)";
+
+function renderPieField(stats, fieldKey, containerId, emptyId, fixedOrder) {
+  const containerEl = document.getElementById(containerId);
+  const emptyEl = document.getElementById(emptyId);
+  const counts = stats[fieldKey] || {};
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+  if (total === 0) {
+    emptyEl.textContent = "No data yet — the dashboard refreshes automatically once a day.";
+    emptyEl.hidden = false;
+    return;
+  }
+
+  let named;
+  let otherValue = 0;
+  let otherLabel = "Other";
+  if (fixedOrder) {
+    named = fixedOrder
+      .filter((key) => key !== "Unspecified")
+      .map((key, i) => ({ label: key, value: counts[key] || 0, color: PIE_COLORS[i] }));
+    Object.entries(counts).forEach(([key, value]) => {
+      if (!fixedOrder.includes(key) || key === "Unspecified") otherValue += value;
+    });
+    if (Object.keys(counts).every((key) => fixedOrder.includes(key))) otherLabel = "Unspecified";
+  } else {
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    named = sorted
+      .slice(0, PIE_COLORS.length)
+      .map(([label, value], i) => ({ label, value, color: PIE_COLORS[i] }));
+    otherValue = sorted.slice(PIE_COLORS.length).reduce((sum, [, v]) => sum + v, 0);
+  }
+  const slices = named.filter((slice) => slice.value > 0);
+  if (otherValue > 0) slices.push({ label: otherLabel, value: otherValue, color: PIE_OTHER_COLOR });
+
+  renderPieChart(containerEl, slices, total);
+}
+
+function renderPieChart(container, slices, total) {
+  container.replaceChildren();
+  container.className = "pie-chart";
+
+  const size = 160;
+  const r = size / 2 - 2;
+  const c = size / 2;
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+  svg.setAttribute("class", "pie-svg");
+  svg.setAttribute("role", "img");
+  svg.setAttribute(
+    "aria-label",
+    slices.map((s) => `${s.label}: ${s.value}`).join(", ")
+  );
+
+  const point = (angle) => [c + r * Math.sin(angle), c - r * Math.cos(angle)];
+  let angle = 0;
+  slices.forEach((slice) => {
+    const pct = Math.round((slice.value / total) * 100);
+    const sweep = (slice.value / total) * Math.PI * 2;
+    let mark;
+    if (slices.length === 1) {
+      mark = document.createElementNS(SVG_NS, "circle");
+      mark.setAttribute("cx", c);
+      mark.setAttribute("cy", c);
+      mark.setAttribute("r", r);
+    } else {
+      const [x1, y1] = point(angle);
+      const [x2, y2] = point(angle + sweep);
+      mark = document.createElementNS(SVG_NS, "path");
+      mark.setAttribute(
+        "d",
+        `M ${c} ${c} L ${x1} ${y1} A ${r} ${r} 0 ${sweep > Math.PI ? 1 : 0} 1 ${x2} ${y2} Z`
+      );
+    }
+    mark.setAttribute("class", "pie-slice");
+    mark.style.fill = slice.color;
+    mark.setAttribute("tabindex", "0");
+    svg.appendChild(mark);
+    attachRowTooltip(mark, container, `${slice.value} (${pct}%)`, slice.label);
+    angle += sweep;
+  });
+
+  const legend = document.createElement("div");
+  legend.className = "pie-legend";
+  slices.forEach((slice) => {
+    const pct = Math.round((slice.value / total) * 100);
+    const item = document.createElement("div");
+    item.className = "pie-legend-item";
+
+    const swatch = document.createElement("span");
+    swatch.className = "legend-swatch";
+    swatch.style.background = slice.color;
+    const labelEl = document.createElement("span");
+    labelEl.className = "pie-legend-label";
+    labelEl.textContent = slice.label; // untrusted (sheet-derived) text -> textContent
+    labelEl.title = slice.label;
+    const valueEl = document.createElement("span");
+    valueEl.className = "pie-legend-value";
+    valueEl.textContent = `${slice.value} · ${pct}%`;
+
+    item.appendChild(swatch);
+    item.appendChild(labelEl);
+    item.appendChild(valueEl);
+    legend.appendChild(item);
+  });
+
+  container.appendChild(svg);
+  container.appendChild(legend);
+}
+
+// Keyword word cloud -- font size scales with count (by square root, so
+// area rather than height tracks the count). Biggest words sit in the
+// middle: entries are dealt alternately to either side of the largest.
+// Each word also shows its count, since size alone is hard to compare.
+function renderWordCloud(container, entries) {
+  container.replaceChildren();
+  container.className = "word-cloud";
+
+  const sorted = entries.slice().sort((a, b) => b[1] - a[1]);
+  const total = sorted.reduce((sum, [, v]) => sum + v, 0);
+  const maxValue = sorted[0][1];
+  const minValue = sorted[sorted.length - 1][1];
+  const MIN_PX = 14;
+  const MAX_PX = 30;
+  const sizeFor = (value) =>
+    maxValue === minValue
+      ? (MIN_PX + MAX_PX) / 2
+      : MIN_PX + ((Math.sqrt(value) - Math.sqrt(minValue)) / (Math.sqrt(maxValue) - Math.sqrt(minValue))) * (MAX_PX - MIN_PX);
+
+  const ordered = [];
+  sorted.forEach((entry, i) => (i % 2 === 0 ? ordered.push(entry) : ordered.unshift(entry)));
+
+  ordered.forEach(([word, value]) => {
+    const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+    const item = document.createElement("span");
+    item.className = "word-cloud-item";
+    item.style.fontSize = `${Math.round(sizeFor(value))}px`;
+    item.tabIndex = 0;
+
+    const wordEl = document.createElement("span");
+    wordEl.textContent = word; // untrusted (sheet-derived) text -> textContent
+    const countEl = document.createElement("span");
+    countEl.className = "word-cloud-count";
+    countEl.textContent = value;
+
+    item.appendChild(wordEl);
+    item.appendChild(countEl);
+    attachRowTooltip(item, container, `${value} (${pct}%)`, word);
+    container.appendChild(item);
+  });
+}
+
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 function niceAxisMax(rawMax) {
@@ -377,8 +738,8 @@ function renderTrendChart(container, monthEntries) {
   container.replaceChildren();
 
   const tooltip = document.getElementById("tooltip");
-  const width = 640;
-  const height = 200;
+  const width = Math.max(320, Math.round(container.clientWidth || 640));
+  const height = 180;
   const marginLeft = 34;
   const marginRight = 44;
   const marginTop = 16;

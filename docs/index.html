@@ -47,21 +47,22 @@
 
       <div class="stat-tile">
         <svg class="stat-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <path d="M2.5 6.5 10 2.5l7.5 4-7.5 4-7.5-4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-          <path d="M5 8.5v5l5 2.5 5-2.5v-5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-        </svg>
-        <span class="stat-label">Gap categories tracked</span>
-        <span class="stat-value" id="category-count">—</span>
-      </div>
-
-      <div class="stat-tile">
-        <svg class="stat-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path d="M4 17V4.5a1 1 0 0 1 1-1h6.6l3.9 3.9V17" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
           <path d="M11.5 3.5V8h4.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
         </svg>
         <span class="stat-label">Most common gap</span>
         <span class="stat-value stat-value-text" id="top-category">—</span>
         <span class="stat-sub" id="top-category-pct"></span>
+      </div>
+
+      <div class="stat-tile">
+        <svg class="stat-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect x="2.5" y="3.5" width="15" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M7 17h6M10 13.5V17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="stat-label">Most common platform</span>
+        <span class="stat-value stat-value-text" id="top-platform">—</span>
+        <span class="stat-sub" id="top-platform-pct"></span>
       </div>
     </section>
 
@@ -110,40 +111,71 @@
         </div>
       </section>
 
-      <section class="chart-card">
+      <!-- Three compact cards share one row (pies + word cloud). -->
+      <div class="chart-row-3 chart-span-2">
+        <section class="chart-card">
+          <div class="chart-card-header">
+            <h2>Where was the query run?</h2>
+            <span class="chart-card-sub">Share of usage scenarios</span>
+          </div>
+          <div id="where-run-empty" class="empty-state" hidden></div>
+          <div id="where-run-container"></div>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-card-header">
+            <h2>Query pattern</h2>
+            <span class="chart-card-sub">Share of usage scenarios</span>
+          </div>
+          <div id="query-pattern-empty" class="empty-state" hidden></div>
+          <div id="query-pattern-container"></div>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-card-header">
+            <h2>Keyword</h2>
+            <span class="chart-card-sub">Larger words are used in more usage scenarios</span>
+          </div>
+          <div id="keyword-empty" class="empty-state" hidden></div>
+          <div id="keyword-container"></div>
+        </section>
+      </div>
+
+      <section class="chart-card chart-span-2">
         <div class="chart-card-header">
-          <h2>Where was the query run?</h2>
-          <span class="chart-card-sub">Ranked by number of usage scenarios</span>
+          <h2>Query pattern by nature of the gap</h2>
+          <span class="chart-card-sub">Number of usage scenarios for each combination</span>
         </div>
-        <div id="where-run-empty" class="empty-state" hidden></div>
-        <div id="where-run-container"></div>
+        <div class="heat-legend" aria-hidden="true">
+          <span>Fewer</span>
+          <span class="legend-swatch heat-1"></span>
+          <span class="legend-swatch heat-2"></span>
+          <span class="legend-swatch heat-3"></span>
+          <span class="legend-swatch heat-4"></span>
+          <span class="legend-swatch heat-5"></span>
+          <span>More</span>
+        </div>
+        <div id="pattern-by-gap-empty" class="empty-state" hidden></div>
+        <div id="pattern-by-gap-container" class="heatmap-scroll"></div>
       </section>
 
-      <section class="chart-card">
-        <div class="chart-card-header">
-          <h2>Query pattern</h2>
-          <span class="chart-card-sub">Ranked by number of usage scenarios</span>
-        </div>
-        <div id="query-pattern-empty" class="empty-state" hidden></div>
-        <div id="query-pattern-container"></div>
-      </section>
-
-      <section class="chart-card">
-        <div class="chart-card-header">
-          <h2>Keyword</h2>
-          <span class="chart-card-sub">Ranked by number of usage scenarios</span>
-        </div>
-        <div id="keyword-empty" class="empty-state" hidden></div>
-        <div id="keyword-container"></div>
-      </section>
-
-      <section class="chart-card">
+      <section class="chart-card chart-span-2">
         <div class="chart-card-header">
           <h2>Cost of an incorrect answer</h2>
-          <span class="chart-card-sub">Ranked by number of usage scenarios</span>
+          <span class="chart-card-sub">Share of usage scenarios at each level, overall and by nature of the gap</span>
         </div>
         <div id="cost-of-error-empty" class="empty-state" hidden></div>
-        <div id="cost-of-error-container"></div>
+        <div id="cost-of-error-container">
+          <div class="stacked-legend">
+            <span class="legend-item"><span class="legend-swatch diverging-1"></span>Low</span>
+            <span class="legend-item"><span class="legend-swatch diverging-2"></span>Moderate</span>
+            <span class="legend-item"><span class="legend-swatch diverging-3"></span>Practical impact</span>
+            <span class="legend-item"><span class="legend-swatch diverging-4"></span>High consequence</span>
+            <span class="legend-item"><span class="legend-swatch diverging-5"></span>Critical/irreversible</span>
+          </div>
+          <div id="cost-of-error-rows" class="diverging-rows"></div>
+          <p id="cost-of-error-note" class="chart-note" hidden></p>
+        </div>
       </section>
 
     </div>

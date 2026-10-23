@@ -31,6 +31,36 @@
   --cat-usecase: #9c6f05;
   --cat-query: #2f8f5b;
   --cat-outcome: #2a5fa0;
+  /* Diverging blue <-> red with a neutral gray midpoint (cost of an
+     incorrect answer: Low ... Critical). Each arm validated as a one-hue
+     ordinal ramp with the dataviz skill's validator, per mode. */
+  --diverging-1: #256abf;
+  --diverging-2: #86b6ef;
+  --diverging-3: #d6d5ce;
+  --diverging-4: #f09a99;
+  --diverging-5: #d13f3e;
+  /* Heatmap: 5 steps of the brand purple mixed toward the surface, few ->
+     many, with the label ink that stays legible on each step. Defined via
+     var() so they follow --series-1/--surface-1 into dark mode. */
+  --heat-1: color-mix(in srgb, var(--series-1) 20%, var(--surface-1));
+  --heat-2: color-mix(in srgb, var(--series-1) 40%, var(--surface-1));
+  --heat-3: color-mix(in srgb, var(--series-1) 60%, var(--surface-1));
+  --heat-4: color-mix(in srgb, var(--series-1) 80%, var(--surface-1));
+  --heat-5: var(--series-1);
+  --heat-1-text: var(--text-primary);
+  --heat-2-text: var(--text-primary);
+  --heat-3-text: #ffffff;
+  --heat-4-text: #ffffff;
+  --heat-5-text: #ffffff;
+  /* Pie slices (where run, query pattern): categorical, fixed order, never
+     cycled -- a 5th+ category folds into a gray "Other". Validated all-pairs
+     with the dataviz skill's checker (light: all pass; dark: CVD in the
+     6-8 band, covered by the 2px slice gaps + labeled legend). */
+  --pie-1: #6250d6;
+  --pie-2: #eda100;
+  --pie-3: #008300;
+  --pie-4: #e87ba4;
+  --pie-other: #a9a8a0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -55,6 +85,26 @@
     --cat-usecase: #e0b23e;
     --cat-query: #6bd99b;
     --cat-outcome: #7da8e0;
+    --diverging-1: #5598e7;
+    --diverging-2: #1c5cab;
+    --diverging-3: #4a4a46;
+    --diverging-4: #9e4544;
+    --diverging-5: #e66767;
+    --heat-1: color-mix(in srgb, var(--series-1) 20%, var(--surface-1));
+    --heat-2: color-mix(in srgb, var(--series-1) 40%, var(--surface-1));
+    --heat-3: color-mix(in srgb, var(--series-1) 60%, var(--surface-1));
+    --heat-4: color-mix(in srgb, var(--series-1) 80%, var(--surface-1));
+    --heat-5: var(--series-1);
+    --heat-1-text: #ffffff;
+    --heat-2-text: #ffffff;
+    --heat-3-text: #ffffff;
+    --heat-4-text: #0b0b0b;
+    --heat-5-text: #0b0b0b;
+    --pie-1: #9085e9;
+    --pie-2: #c98500;
+    --pie-3: #008300;
+    --pie-4: #d55181;
+    --pie-other: #6a6964;
   }
 }
 
@@ -229,8 +279,17 @@ body {
   grid-column: 1 / -1;
 }
 
+/* A full-width row holding three compact cards (the two pies + the
+   keyword cloud). */
+.chart-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
 @media (max-width: 860px) {
-  .chart-grid {
+  .chart-grid,
+  .chart-row-3 {
     grid-template-columns: 1fr;
   }
 }
@@ -502,6 +561,272 @@ body {
   text-align: right;
 }
 
+/* ---------- Diverging chart (cost of an incorrect answer) ---------- */
+
+.diverging-1 { background: var(--diverging-1); }
+.diverging-2 { background: var(--diverging-2); }
+.diverging-3 { background: var(--diverging-3); }
+.diverging-4 { background: var(--diverging-4); }
+.diverging-5 { background: var(--diverging-5); }
+
+.diverging-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.diverging-row {
+  display: grid;
+  grid-template-columns: minmax(0, 160px) 1fr 40px;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 8px;
+  border-radius: 8px;
+}
+
+.diverging-row:hover {
+  background: color-mix(in srgb, var(--series-1) 6%, transparent);
+}
+
+/* The overall row sits apart from the per-gap rows below it. */
+.diverging-row-overall {
+  border-bottom: 1px solid var(--gridline);
+  border-radius: 8px 8px 0 0;
+  padding-bottom: 11px;
+  margin-bottom: 4px;
+}
+
+.diverging-row-overall .stacked-label {
+  font-weight: 700;
+}
+
+.diverging-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 20px;
+  /* the center line every row diverges from */
+  background: linear-gradient(var(--baseline), var(--baseline)) center / 1px 100% no-repeat;
+}
+
+.diverging-half {
+  display: flex;
+  gap: 2px; /* the surface-color gap between segments */
+  height: 100%;
+}
+
+.diverging-half-left {
+  justify-content: flex-end;
+  padding-right: 1px;
+}
+
+.diverging-half-right {
+  padding-left: 1px;
+}
+
+.diverging-segment {
+  height: 100%;
+  cursor: pointer;
+}
+
+.diverging-segment:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: -2px;
+}
+
+/* Rounded only at each bar's outer ends -- the center stays square. */
+.diverging-half-left .diverging-segment:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.diverging-half-right .diverging-segment:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+.chart-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 12px 0 0;
+}
+
+/* ---------- Heatmap (query pattern x gap) ---------- */
+
+.heatmap-scroll {
+  overflow-x: auto;
+}
+
+.heatmap {
+  display: grid;
+  gap: 2px;
+  min-width: 520px;
+  font-variant-numeric: tabular-nums;
+}
+
+.heatmap-col-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 0 4px 6px;
+}
+
+.heatmap-row-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  align-self: center;
+  padding-right: 8px;
+}
+
+.heatmap-total-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.heatmap-cell {
+  height: 40px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--page-plane);
+}
+
+.heatmap-cell[tabindex] {
+  cursor: pointer;
+}
+
+.heat-1 { background: var(--heat-1); color: var(--heat-1-text); }
+.heat-2 { background: var(--heat-2); color: var(--heat-2-text); }
+.heat-3 { background: var(--heat-3); color: var(--heat-3-text); }
+.heat-4 { background: var(--heat-4); color: var(--heat-4-text); }
+.heat-5 { background: var(--heat-5); color: var(--heat-5-text); }
+
+.heat-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.heat-legend .legend-swatch {
+  width: 18px;
+}
+
+.heatmap-cell:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: -2px;
+}
+
+.heatmap-row-total {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Pie charts (where run, query pattern) ---------- */
+
+.pie-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.pie-svg {
+  width: 160px;
+  height: 160px;
+  display: block;
+}
+
+.pie-slice {
+  stroke: var(--surface-1);
+  stroke-width: 2px; /* the surface-color gap between slices */
+  stroke-linejoin: round;
+  cursor: pointer;
+}
+
+.pie-slice:hover {
+  opacity: 0.85;
+}
+
+.pie-slice:focus-visible {
+  outline: none;
+  stroke: var(--text-primary);
+}
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.pie-legend-item {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.pie-legend-label {
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pie-legend-value {
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Word cloud (keyword) ---------- */
+
+.word-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 8px 4px;
+}
+
+.word-cloud-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--text-primary);
+  border-radius: 6px;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+.word-cloud-item:hover,
+.word-cloud-item:focus-visible {
+  background: color-mix(in srgb, var(--series-1) 8%, transparent);
+  outline: none;
+}
+
+.word-cloud-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- Tooltip ---------- */
 
 .tooltip {
@@ -676,6 +1001,24 @@ body {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+/* Required marker, driven by the `required` attribute itself so fields that
+   log-scenario.js toggles (outcome follow-ups, the new use-case-ID box)
+   gain/lose it automatically. */
+.form-field:has(> :required:not([hidden])) > label::after {
+  content: " *";
+  color: var(--status-critical);
+}
+
+.required-mark {
+  color: var(--status-critical);
+}
+
+.form-required-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 20px;
 }
 
 .form-field select,

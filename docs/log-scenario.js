@@ -12,15 +12,66 @@ const form = document.getElementById("scenario-form");
 const messageEl = document.getElementById("form-message");
 const outcomeSelect = document.getElementById("outcome");
 const followups = document.getElementById("outcome-followups");
-const useCaseIdInput = document.getElementById("use_case_id");
+const useCaseIdSelect = document.getElementById("use_case_id_select");
+const useCaseIdNew = document.getElementById("use_case_id_new");
 const intentInput = document.getElementById("intent");
+
+const NEW_USE_CASE_ID = "__new__";
+
+// Use case ID is a dropdown of IDs already logged (published as
+// stats.json's `use_case_ids` by QTS-Data's Action) plus an "add new"
+// option that reveals a free-text box. If that list can't be loaded, the
+// dropdown is dropped and the free-text box becomes the field.
+function syncUseCaseId() {
+  const typingNew = useCaseIdSelect.hidden || useCaseIdSelect.value === NEW_USE_CASE_ID;
+  useCaseIdNew.hidden = !typingNew;
+  useCaseIdNew.required = typingNew;
+}
+
+function useTextOnlyUseCaseId() {
+  useCaseIdSelect.hidden = true;
+  useCaseIdSelect.required = false;
+  syncUseCaseId();
+}
+
+async function loadUseCaseIds() {
+  try {
+    const res = await fetch("./data/stats.json", { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ids = (await res.json()).use_case_ids || [];
+    if (ids.length === 0) {
+      useTextOnlyUseCaseId();
+      return;
+    }
+    const addNewOption = useCaseIdSelect.querySelector(`option[value="${NEW_USE_CASE_ID}"]`);
+    ids.forEach((id) => {
+      const opt = document.createElement("option");
+      opt.value = id;
+      opt.textContent = id;
+      useCaseIdSelect.insertBefore(opt, addNewOption);
+    });
+  } catch (err) {
+    useTextOnlyUseCaseId();
+  }
+}
+
+function currentUseCaseId() {
+  return useCaseIdNew.hidden ? useCaseIdSelect.value : useCaseIdNew.value.trim();
+}
+
+useCaseIdSelect.addEventListener("change", () => {
+  syncUseCaseId();
+  if (!useCaseIdNew.hidden) useCaseIdNew.focus();
+});
+syncUseCaseId();
+loadUseCaseIds();
 
 // GitHub issue titles aren't one of the 25 parsed fields (process_submission.py
 // only reads the issue BODY) -- they just make QTS-Data's Issues list
 // scannable. Built from fields that are always required, so both are
 // guaranteed to have a value by the time this runs.
 function buildTitle() {
-  const useCaseId = useCaseIdInput.value.trim();
+  const useCaseId = currentUseCaseId();
   const intent = intentInput.value.trim();
   const MAX_INTENT_LEN = 60;
   const shortIntent =
@@ -69,6 +120,7 @@ form.addEventListener("submit", (evt) => {
   const params = new URLSearchParams();
   params.set("template", TEMPLATE_NAME);
   params.set("title", buildTitle());
+  params.set("use_case_id", currentUseCaseId());
 
   form.querySelectorAll("input[name], select[name], textarea[name]").forEach((field) => {
     const value = field.value.trim();

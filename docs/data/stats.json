@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-23T23:36:07.911915+00:00",
-  "total_rows": 65,
+  "generated_at": "2026-10-23T23:50:39.603117+00:00",
+  "total_rows": 66,
   "gap_counts": {
     "Understanding gap": 18,
     "Decision gap": 15,
-    "Information gap": 11,
+    "Information gap": 12,
     "Orientation gap": 8,
     "Production gap": 8,
     "out of scope": 5
@@ -19,16 +19,16 @@
     "2026-07": 7,
     "2026-08": 4,
     "2026-09": 3,
-    "2026-10": 8
+    "2026-10": 9
   },
   "outcome_counts": {
-    "Y": 38,
+    "Y": 39,
     "N": 11,
     "Partial": 16
   },
   "where_run_counts": {
     "API (direct)": 23,
-    "UI": 18,
+    "UI": 19,
     "ARAX": 16,
     "ARS GUI": 8
   },
@@ -36,11 +36,12 @@
     "Mechanistic": 19,
     "Causal": 18,
     "Contextual": 16,
-    "Deductive": 12
+    "Deductive": 12,
+    "Unspecified": 1
   },
   "keyword_counts": {
+    "therapeutic target": 13,
     "adverse event": 13,
-    "therapeutic target": 12,
     "mechanism of action": 12,
     "gene-disease association": 12,
     "pathway analysis": 6,
@@ -52,7 +53,8 @@
     "High consequence": 13,
     "Moderate": 13,
     "Critical/irreversible": 12,
-    "Practical impact": 12
+    "Practical impact": 12,
+    "Unspecified": 1
   },
   "outcome_by_gap": {
     "Decision gap": {
@@ -71,7 +73,7 @@
       "N": 2
     },
     "Information gap": {
-      "Y": 9,
+      "Y": 10,
       "Partial": 2,
       "N": 0
     },
@@ -130,7 +132,7 @@
       "Critical/irreversible": 1
     }
   },
-  "cost_of_error_unspecified": 0,
+  "cost_of_error_unspecified": 1,
   "query_pattern_by_gap": {
     "Decision gap": {
       "Mechanistic": 7,
@@ -154,7 +156,8 @@
       "Deductive": 3,
       "Causal": 3,
       "Contextual": 3,
-      "Mechanistic": 2
+      "Mechanistic": 2,
+      "Unspecified": 1
     },
     "Production gap": {
       "Causal": 3,
@@ -188,6 +191,7 @@
     "CATRAX-09",
     "CATRAX-11",
     "CATRAX-12",
+    "DOGSURF-1",
     "IMMUNO-02",
     "IMMUNO-04",
     "IMMUNO-05",

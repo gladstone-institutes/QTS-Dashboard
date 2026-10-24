@@ -129,9 +129,19 @@ form.addEventListener("submit", (evt) => {
     }
   });
 
-  try {
-    window.location.href = `${REPO_ISSUE_URL}?${params.toString()}`;
-  } catch (err) {
-    showError("Couldn't open GitHub — please try again.");
+  const issueTab = window.open(`${REPO_ISSUE_URL}?${params.toString()}`, "_blank");
+  if (issueTab) {
+    issueTab.opener = null; // the GitHub tab gets no handle back to this page
+    // Clear the form so the same scenario isn't submitted twice by accident,
+    // then re-sync the parts the JS shows/hides from the selected values.
+    form.reset();
+    syncFollowups();
+    syncUseCaseId();
+    messageEl.className = "form-message form-message-success";
+    messageEl.textContent =
+      "Opened GitHub in a new tab — review and submit the issue there.";
+    messageEl.hidden = false;
+  } else {
+    showError("Your browser blocked the new tab — allow pop-ups for this site and try again.");
   }
 });

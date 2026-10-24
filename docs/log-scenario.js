@@ -79,24 +79,10 @@ function buildTitle() {
   return `[Usage scenario] ${useCaseId} — ${shortIntent}`;
 }
 
-// Only required when the outcome wasn't fully successful — GitHub's native
-// issue form can't express this conditional requiredness, so it's
-// enforced here instead (see QTS-Data/scripts/config.py's
-// REQUIRED_IF_NOT_FULLY_SUCCESSFUL for the canonical list).
-const FOLLOWUP_FIELD_IDS = [
-  "nodes_of_non_interest",
-  "explanation_of_need",
-  "system_functioning_level",
-  "workaround_existing",
-  "github_issue_link",
-];
-
+// The "what went wrong" follow-up fields only apply when the outcome wasn't
+// fully successful, so they're shown only then. All of them are optional.
 function syncFollowups() {
-  const needsFollowup = outcomeSelect.value !== "" && outcomeSelect.value !== "Y";
-  followups.hidden = !needsFollowup;
-  FOLLOWUP_FIELD_IDS.forEach((id) => {
-    document.getElementById(id).required = needsFollowup;
-  });
+  followups.hidden = outcomeSelect.value === "" || outcomeSelect.value === "Y";
 }
 
 outcomeSelect.addEventListener("change", syncFollowups);

@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-26T20:08:33.519799+00:00",
-  "total_rows": 68,
+  "generated_at": "2026-10-26T21:17:50.103235+00:00",
+  "total_rows": 69,
   "gap_counts": {
     "Understanding gap": 19,
     "Decision gap": 15,
-    "Information gap": 13,
+    "Information gap": 14,
     "Orientation gap": 8,
     "Production gap": 8,
     "out of scope": 5
@@ -19,16 +19,16 @@
     "2026-07": 7,
     "2026-08": 4,
     "2026-09": 3,
-    "2026-10": 11
+    "2026-10": 12
   },
   "outcome_counts": {
-    "Y": 39,
+    "Y": 40,
     "N": 12,
     "Partial": 17
   },
   "where_run_counts": {
     "API (direct)": 23,
-    "UI": 21,
+    "UI": 22,
     "ARAX": 16,
     "ARS GUI": 8
   },
@@ -36,11 +36,11 @@
     "Mechanistic": 21,
     "Causal": 18,
     "Contextual": 16,
-    "Deductive": 12,
+    "Deductive": 13,
     "Unspecified": 1
   },
   "keyword_counts": {
-    "therapeutic target": 13,
+    "therapeutic target": 14,
     "adverse event": 13,
     "mechanism of action": 12,
     "gene-disease association": 12,
@@ -50,7 +50,7 @@
     "pathway mechanism": 1
   },
   "cost_of_error_counts": {
-    "Low": 15,
+    "Low": 16,
     "Moderate": 14,
     "High consequence": 13,
     "Practical impact": 13,
@@ -74,7 +74,7 @@
       "N": 2
     },
     "Information gap": {
-      "Y": 10,
+      "Y": 11,
       "Partial": 3,
       "N": 0
     },
@@ -112,7 +112,7 @@
       "Critical/irreversible": 1
     },
     "Information gap": {
-      "Low": 3,
+      "Low": 4,
       "Moderate": 3,
       "Practical impact": 2,
       "High consequence": 2,
@@ -154,7 +154,7 @@
       "Contextual": 1
     },
     "Information gap": {
-      "Deductive": 3,
+      "Deductive": 4,
       "Causal": 3,
       "Contextual": 3,
       "Mechanistic": 3,
@@ -195,6 +195,7 @@
     "DOGSURF-1",
     "DOGSURF-2",
     "DOGSURF-3",
+    "DOGSURF-4",
     "IMMUNO-02",
     "IMMUNO-04",
     "IMMUNO-05",

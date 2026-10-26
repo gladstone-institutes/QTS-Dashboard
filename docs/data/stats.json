@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-23T23:50:39.603117+00:00",
-  "total_rows": 66,
+  "generated_at": "2026-10-26T18:01:56.556690+00:00",
+  "total_rows": 67,
   "gap_counts": {
-    "Understanding gap": 18,
+    "Understanding gap": 19,
     "Decision gap": 15,
     "Information gap": 12,
     "Orientation gap": 8,
@@ -19,21 +19,21 @@
     "2026-07": 7,
     "2026-08": 4,
     "2026-09": 3,
-    "2026-10": 9
+    "2026-10": 10
   },
   "outcome_counts": {
     "Y": 39,
-    "N": 11,
+    "N": 12,
     "Partial": 16
   },
   "where_run_counts": {
     "API (direct)": 23,
-    "UI": 19,
+    "UI": 20,
     "ARAX": 16,
     "ARS GUI": 8
   },
   "query_pattern_counts": {
-    "Mechanistic": 19,
+    "Mechanistic": 20,
     "Causal": 18,
     "Contextual": 16,
     "Deductive": 12,
@@ -46,12 +46,13 @@
     "gene-disease association": 12,
     "pathway analysis": 6,
     "drug repurposing": 5,
-    "biomarker discovery": 5
+    "biomarker discovery": 5,
+    "pathway mechanism": 1
   },
   "cost_of_error_counts": {
     "Low": 15,
+    "Moderate": 14,
     "High consequence": 13,
-    "Moderate": 13,
     "Critical/irreversible": 12,
     "Practical impact": 12,
     "Unspecified": 1
@@ -65,7 +66,7 @@
     "Understanding gap": {
       "Y": 10,
       "Partial": 6,
-      "N": 2
+      "N": 3
     },
     "Orientation gap": {
       "Y": 5,
@@ -98,7 +99,7 @@
     },
     "Understanding gap": {
       "Low": 5,
-      "Moderate": 2,
+      "Moderate": 3,
       "Practical impact": 3,
       "High consequence": 5,
       "Critical/irreversible": 3
@@ -142,7 +143,7 @@
     },
     "Understanding gap": {
       "Causal": 2,
-      "Mechanistic": 6,
+      "Mechanistic": 7,
       "Deductive": 2,
       "Contextual": 8
     },
@@ -192,6 +193,7 @@
     "CATRAX-11",
     "CATRAX-12",
     "DOGSURF-1",
+    "DOGSURF-2",
     "IMMUNO-02",
     "IMMUNO-04",
     "IMMUNO-05",

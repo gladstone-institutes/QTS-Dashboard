@@ -1,223 +1,229 @@
 {
-  "generated_at": "2026-10-26T21:17:50.103235+00:00",
-  "total_rows": 69,
+  "generated_at": "2026-10-28T17:32:19.138303+00:00",
+  "total_rows": 65,
   "gap_counts": {
-    "Understanding gap": 19,
-    "Decision gap": 15,
-    "Information gap": 14,
-    "Orientation gap": 8,
-    "Production gap": 8,
-    "out of scope": 5
+    "Understanding gap": 29,
+    "Decision gap": 11,
+    "Production gap": 11,
+    "Orientation gap": 6,
+    "Information gap": 5,
+    "out of scope": 3
   },
   "monthly_counts": {
-    "2026-01": 9,
-    "2026-02": 8,
-    "2026-03": 7,
-    "2026-04": 9,
-    "2026-05": 9,
-    "2026-06": 1,
-    "2026-07": 7,
-    "2026-08": 4,
+    "2025-03": 2,
+    "2025-04": 4,
+    "2025-05": 1,
+    "2025-06": 4,
+    "2025-07": 6,
+    "2025-08": 2,
+    "2025-09": 6,
+    "2025-10": 4,
+    "2025-11": 5,
+    "2025-12": 1,
+    "2026-01": 2,
+    "2026-02": 4,
+    "2026-03": 3,
+    "2026-04": 1,
+    "2026-05": 2,
+    "2026-06": 6,
+    "2026-07": 2,
+    "2026-08": 3,
     "2026-09": 3,
-    "2026-10": 12
+    "2026-10": 4
   },
   "outcome_counts": {
-    "Y": 40,
-    "N": 12,
-    "Partial": 17
+    "Y": 30,
+    "N": 8,
+    "Partial": 27
   },
   "where_run_counts": {
-    "API (direct)": 23,
-    "UI": 22,
-    "ARAX": 16,
-    "ARS GUI": 8
+    "UI": 34,
+    "ARAX": 19,
+    "TCT": 12
   },
   "query_pattern_counts": {
-    "Mechanistic": 21,
+    "Mechanistic": 23,
     "Causal": 18,
-    "Contextual": 16,
-    "Deductive": 13,
-    "Unspecified": 1
+    "Deductive": 15,
+    "Contextual": 9
   },
   "keyword_counts": {
-    "therapeutic target": 14,
-    "adverse event": 13,
-    "mechanism of action": 12,
-    "gene-disease association": 12,
-    "drug repurposing": 6,
-    "pathway analysis": 6,
-    "biomarker discovery": 5,
-    "pathway mechanism": 1
+    "drug repurposing": 14,
+    "gene-disease association": 14,
+    "mechanism of action": 11,
+    "therapeutic target": 10,
+    "biomarker discovery": 7,
+    "pathway analysis": 5,
+    "adverse event": 4
   },
   "cost_of_error_counts": {
-    "Low": 16,
-    "Moderate": 14,
-    "High consequence": 13,
+    "High consequence": 25,
     "Practical impact": 13,
-    "Critical/irreversible": 12,
-    "Unspecified": 1
+    "Low": 9,
+    "Moderate": 9,
+    "Critical/irreversible": 9
   },
   "outcome_by_gap": {
     "Decision gap": {
-      "Y": 9,
-      "Partial": 2,
-      "N": 4
+      "Y": 5,
+      "Partial": 5,
+      "N": 1
     },
     "Understanding gap": {
-      "Y": 10,
-      "Partial": 6,
-      "N": 3
-    },
-    "Orientation gap": {
-      "Y": 5,
-      "Partial": 1,
-      "N": 2
-    },
-    "Information gap": {
-      "Y": 11,
-      "Partial": 3,
-      "N": 0
-    },
-    "Production gap": {
-      "Y": 2,
-      "Partial": 3,
-      "N": 3
+      "Y": 17,
+      "Partial": 8,
+      "N": 4
     },
     "out of scope": {
+      "Y": 0,
+      "Partial": 2,
+      "N": 1
+    },
+    "Orientation gap": {
       "Y": 3,
       "Partial": 2,
+      "N": 1
+    },
+    "Production gap": {
+      "Y": 4,
+      "Partial": 6,
+      "N": 1
+    },
+    "Information gap": {
+      "Y": 1,
+      "Partial": 4,
       "N": 0
+    }
+  },
+  "outcome_by_where_run": {
+    "ARAX": {
+      "Y": 11,
+      "Partial": 6,
+      "N": 2
+    },
+    "TCT": {
+      "Y": 4,
+      "Partial": 6,
+      "N": 2
+    },
+    "UI": {
+      "Y": 15,
+      "Partial": 15,
+      "N": 4
     }
   },
   "cost_of_error_by_gap": {
     "Decision gap": {
-      "Low": 3,
+      "Low": 2,
       "Moderate": 2,
-      "Practical impact": 4,
+      "Practical impact": 2,
       "High consequence": 3,
-      "Critical/irreversible": 3
+      "Critical/irreversible": 2
     },
     "Understanding gap": {
       "Low": 5,
-      "Moderate": 3,
+      "Moderate": 6,
       "Practical impact": 3,
-      "High consequence": 5,
-      "Critical/irreversible": 3
+      "High consequence": 10,
+      "Critical/irreversible": 5
+    },
+    "out of scope": {
+      "Low": 0,
+      "Moderate": 0,
+      "Practical impact": 3,
+      "High consequence": 0,
+      "Critical/irreversible": 0
     },
     "Orientation gap": {
-      "Low": 1,
-      "Moderate": 3,
-      "Practical impact": 2,
-      "High consequence": 1,
+      "Low": 0,
+      "Moderate": 0,
+      "Practical impact": 4,
+      "High consequence": 2,
+      "Critical/irreversible": 0
+    },
+    "Production gap": {
+      "Low": 2,
+      "Moderate": 1,
+      "Practical impact": 0,
+      "High consequence": 7,
       "Critical/irreversible": 1
     },
     "Information gap": {
-      "Low": 4,
-      "Moderate": 3,
-      "Practical impact": 2,
-      "High consequence": 2,
-      "Critical/irreversible": 2
-    },
-    "Production gap": {
-      "Low": 1,
-      "Moderate": 2,
+      "Low": 0,
+      "Moderate": 0,
       "Practical impact": 1,
-      "High consequence": 2,
-      "Critical/irreversible": 2
-    },
-    "out of scope": {
-      "Low": 2,
-      "Moderate": 1,
-      "Practical impact": 1,
-      "High consequence": 0,
+      "High consequence": 3,
       "Critical/irreversible": 1
     }
   },
-  "cost_of_error_unspecified": 1,
+  "cost_of_error_unspecified": 0,
   "query_pattern_by_gap": {
     "Decision gap": {
-      "Mechanistic": 7,
-      "Causal": 4,
-      "Deductive": 2,
-      "Contextual": 2
-    },
-    "Understanding gap": {
-      "Causal": 2,
-      "Mechanistic": 7,
-      "Deductive": 2,
-      "Contextual": 8
-    },
-    "Orientation gap": {
-      "Causal": 4,
-      "Deductive": 1,
-      "Mechanistic": 2,
+      "Mechanistic": 4,
+      "Causal": 3,
+      "Deductive": 3,
       "Contextual": 1
     },
-    "Information gap": {
+    "Understanding gap": {
+      "Causal": 7,
+      "Mechanistic": 13,
       "Deductive": 4,
-      "Causal": 3,
-      "Contextual": 3,
-      "Mechanistic": 3,
-      "Unspecified": 1
+      "Contextual": 5
+    },
+    "out of scope": {
+      "Deductive": 2,
+      "Causal": 1
+    },
+    "Orientation gap": {
+      "Mechanistic": 1,
+      "Contextual": 1,
+      "Deductive": 2,
+      "Causal": 2
     },
     "Production gap": {
       "Causal": 3,
-      "Deductive": 3,
-      "Contextual": 2
+      "Deductive": 4,
+      "Mechanistic": 4
     },
-    "out of scope": {
-      "Mechanistic": 2,
-      "Deductive": 1,
-      "Causal": 2
+    "Information gap": {
+      "Causal": 2,
+      "Mechanistic": 1,
+      "Contextual": 2
     }
   },
   "use_case_ids": [
-    "CARDIO-01",
-    "CARDIO-02",
-    "CARDIO-04",
-    "CARDIO-05",
-    "CARDIO-07",
-    "CARDIO-08",
-    "CARDIO-09",
-    "CARDIO-10",
-    "CARDIO-11",
-    "CARDIO-12",
-    "CATRAX-01",
     "CATRAX-02",
-    "CATRAX-03",
     "CATRAX-04",
     "CATRAX-05",
     "CATRAX-06",
+    "CATRAX-07",
     "CATRAX-08",
     "CATRAX-09",
+    "CATRAX-10",
     "CATRAX-11",
     "CATRAX-12",
-    "DOGSURF-1",
-    "DOGSURF-2",
-    "DOGSURF-3",
-    "DOGSURF-4",
-    "IMMUNO-02",
-    "IMMUNO-04",
-    "IMMUNO-05",
-    "IMMUNO-06",
-    "IMMUNO-07",
-    "IMMUNO-09",
-    "IMMUNO-10",
-    "IMMUNO-11",
-    "NEURO-03",
-    "NEURO-04",
-    "NEURO-09",
-    "NEURO-10",
-    "ONCO-01",
-    "ONCO-02",
-    "ONCO-03",
-    "ONCO-04",
-    "ONCO-05",
-    "ONCO-06",
-    "ONCO-07",
-    "ONCO-08",
-    "ONCO-09",
-    "ONCO-10",
-    "ONCO-12"
+    "DOGSLED-01",
+    "DOGSLED-02",
+    "DOGSLED-03",
+    "DOGSLED-04",
+    "DOGSLED-05",
+    "DOGSLED-06",
+    "DOGSLED-07",
+    "DOGSLED-08",
+    "DOGSLED-09",
+    "DOGSLED-10",
+    "DOGSLED-11",
+    "DOGSLED-12",
+    "DOGSURF-01",
+    "DOGSURF-02",
+    "DOGSURF-03",
+    "DOGSURF-04",
+    "DOGSURF-05",
+    "DOGSURF-07",
+    "DOGSURF-08",
+    "DOGSURF-09",
+    "DOGSURF-10",
+    "DOGSURF-11",
+    "DOGSURF-12"
   ]
 }

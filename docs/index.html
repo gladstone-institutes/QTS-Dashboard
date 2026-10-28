@@ -28,10 +28,10 @@
 
     <header class="page-header">
       <div class="header-top">
-        <span class="badge badge-muted" id="last-updated">Last updated: —</span>
+        <span class="badge badge-muted" id="last-updated">Last updated: –</span>
       </div>
       <h1>QTS Dashboard</h1>
-      <p class="subtitle">Usage scenarios logged by UEIC members — tracking the gap between what users intended and what Translator delivered</p>
+      <p class="subtitle">Usage scenarios logged by UEIC members, tracking the gap between what users intended and what Translator delivered</p>
     </header>
 
     <section class="stat-grid" aria-live="polite">
@@ -42,7 +42,7 @@
           <rect x="14" y="2.5" width="3.5" height="15" rx="1" fill="currentColor"/>
         </svg>
         <span class="stat-label">Total usage scenarios tracked</span>
-        <span class="stat-value" id="total-rows">—</span>
+        <span class="stat-value" id="total-rows">–</span>
       </div>
 
       <div class="stat-tile">
@@ -51,7 +51,7 @@
           <path d="M11.5 3.5V8h4.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
         </svg>
         <span class="stat-label">Most common gap</span>
-        <span class="stat-value stat-value-text" id="top-category">—</span>
+        <span class="stat-value stat-value-text" id="top-category">–</span>
         <span class="stat-sub" id="top-category-pct"></span>
       </div>
 
@@ -61,65 +61,23 @@
           <path d="M7 17h6M10 13.5V17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
         <span class="stat-label">Most common platform</span>
-        <span class="stat-value stat-value-text" id="top-platform">—</span>
+        <span class="stat-value stat-value-text" id="top-platform">–</span>
         <span class="stat-sub" id="top-platform-pct"></span>
       </div>
     </section>
 
     <div class="chart-grid">
 
-      <section class="chart-card">
-        <div class="chart-card-header">
-          <h2>Nature of the gap they want to close</h2>
-          <span class="chart-card-sub">Ranked by number of logged queries</span>
-        </div>
-        <div id="chart-empty" class="empty-state" hidden></div>
-        <div id="chart-container"></div>
-      </section>
-
-      <section class="chart-card">
-        <div class="chart-card-header">
-          <h2>Outcome</h2>
-          <span class="chart-card-sub">Did Translator deliver what the user intended?</span>
-        </div>
-        <div id="outcome-empty" class="empty-state" hidden></div>
-        <div id="outcome-container"></div>
-      </section>
-
-      <section class="chart-card chart-span-2">
-        <div class="chart-card-header">
-          <h2>Usage scenarios submitted over time</h2>
-          <span class="chart-card-sub">By month</span>
-        </div>
-        <div id="trend-empty" class="empty-state" hidden></div>
-        <div id="trend-container" class="trend-chart"></div>
-      </section>
-
-      <section class="chart-card chart-span-2">
-        <div class="chart-card-header">
-          <h2>Outcome by nature of the gap</h2>
-          <span class="chart-card-sub">Where is Translator falling short, and on which kind of gap?</span>
-        </div>
-        <div id="outcome-by-gap-empty" class="empty-state" hidden></div>
-        <div id="outcome-by-gap-container">
-          <div class="stacked-legend">
-            <span class="legend-item"><span class="legend-swatch legend-swatch-good"></span>Successful</span>
-            <span class="legend-item"><span class="legend-swatch legend-swatch-warning"></span>Partially successful</span>
-            <span class="legend-item"><span class="legend-swatch legend-swatch-critical"></span>Not successful</span>
-          </div>
-          <div id="outcome-by-gap-rows" class="stacked-rows"></div>
-        </div>
-      </section>
-
-      <!-- Three compact cards share one row (pies + word cloud). -->
+      <!-- Three compact cards share the top row: gap ranking, query pattern
+           pie and keyword cloud. -->
       <div class="chart-row-3 chart-span-2">
         <section class="chart-card">
           <div class="chart-card-header">
-            <h2>Where was the query run?</h2>
-            <span class="chart-card-sub">Share of logged queries</span>
+            <h2>Nature of the gap they want to close</h2>
+            <span class="chart-card-sub">Ranked by number of logged queries</span>
           </div>
-          <div id="where-run-empty" class="empty-state" hidden></div>
-          <div id="where-run-container"></div>
+          <div id="chart-empty" class="empty-state" hidden></div>
+          <div id="chart-container"></div>
         </section>
 
         <section class="chart-card">
@@ -143,16 +101,57 @@
 
       <section class="chart-card chart-span-2">
         <div class="chart-card-header">
+          <h2>Usage scenarios submitted over time</h2>
+          <span class="chart-card-sub">By month</span>
+        </div>
+        <div id="trend-empty" class="empty-state" hidden></div>
+        <div id="trend-container" class="trend-chart"></div>
+      </section>
+
+      <section class="chart-card">
+        <div class="chart-card-header">
+          <h2>Outcome by nature of the gap</h2>
+          <span class="chart-card-sub">Where is Translator falling short, and on which kind of gap?</span>
+        </div>
+        <div id="outcome-by-gap-empty" class="empty-state" hidden></div>
+        <div id="outcome-by-gap-container">
+          <div class="stacked-legend">
+            <span class="legend-item"><span class="legend-swatch legend-swatch-good"></span>Successful</span>
+            <span class="legend-item"><span class="legend-swatch legend-swatch-warning"></span>Partially successful</span>
+            <span class="legend-item"><span class="legend-swatch legend-swatch-critical"></span>Not successful</span>
+          </div>
+          <div id="outcome-by-gap-rows" class="stacked-rows"></div>
+        </div>
+      </section>
+
+      <section class="chart-card">
+        <div class="chart-card-header">
+          <h2>Outcome by where the query was run</h2>
+          <span class="chart-card-sub">Is success higher on UI, ARAX or TCT?</span>
+        </div>
+        <div id="outcome-by-platform-empty" class="empty-state" hidden></div>
+        <div id="outcome-by-platform-container">
+          <div class="stacked-legend">
+            <span class="legend-item"><span class="legend-swatch legend-swatch-good"></span>Successful</span>
+            <span class="legend-item"><span class="legend-swatch legend-swatch-warning"></span>Partially successful</span>
+            <span class="legend-item"><span class="legend-swatch legend-swatch-critical"></span>Not successful</span>
+          </div>
+          <div id="outcome-by-platform-rows" class="stacked-rows"></div>
+        </div>
+      </section>
+
+      <section class="chart-card chart-span-2">
+        <div class="chart-card-header">
           <h2>Query pattern by nature of the gap</h2>
           <span class="chart-card-sub">Number of logged queries for each combination</span>
         </div>
         <div class="heat-legend" aria-hidden="true">
           <span>Fewer</span>
-          <span class="legend-swatch heat-1"></span>
-          <span class="legend-swatch heat-2"></span>
-          <span class="legend-swatch heat-3"></span>
-          <span class="legend-swatch heat-4"></span>
-          <span class="legend-swatch heat-5"></span>
+          <span class="legend-swatch seq-1"></span>
+          <span class="legend-swatch seq-2"></span>
+          <span class="legend-swatch seq-3"></span>
+          <span class="legend-swatch seq-4"></span>
+          <span class="legend-swatch seq-5"></span>
           <span>More</span>
         </div>
         <div id="pattern-by-gap-empty" class="empty-state" hidden></div>
@@ -162,18 +161,18 @@
       <section class="chart-card chart-span-2">
         <div class="chart-card-header">
           <h2>Cost of an incorrect answer</h2>
-          <span class="chart-card-sub">Share of logged queries at each level, overall and by nature of the gap</span>
+          <span class="chart-card-sub">Share of logged queries at each level, overall and by nature of the gap.</span>
         </div>
         <div id="cost-of-error-empty" class="empty-state" hidden></div>
         <div id="cost-of-error-container">
           <div class="stacked-legend">
-            <span class="legend-item"><span class="legend-swatch diverging-1"></span>Low</span>
-            <span class="legend-item"><span class="legend-swatch diverging-2"></span>Moderate</span>
-            <span class="legend-item"><span class="legend-swatch diverging-3"></span>Practical impact</span>
-            <span class="legend-item"><span class="legend-swatch diverging-4"></span>High consequence</span>
-            <span class="legend-item"><span class="legend-swatch diverging-5"></span>Critical/irreversible</span>
+            <span class="legend-item"><span class="legend-swatch sev-1"></span>Low</span>
+            <span class="legend-item"><span class="legend-swatch sev-2"></span>Moderate</span>
+            <span class="legend-item"><span class="legend-swatch sev-3"></span>Practical impact</span>
+            <span class="legend-item"><span class="legend-swatch sev-4"></span>High consequence</span>
+            <span class="legend-item"><span class="legend-swatch sev-5"></span>Critical/irreversible</span>
           </div>
-          <div id="cost-of-error-rows" class="diverging-rows"></div>
+          <div id="cost-of-error-rows" class="stacked-rows"></div>
           <p id="cost-of-error-note" class="chart-note" hidden></p>
         </div>
       </section>
@@ -181,7 +180,7 @@
     </div>
 
     <footer class="page-footer">
-      <span id="data-source-note">Data source: QTS-Data (private) — see README for how submissions flow in</span>
+      <span id="data-source-note">Data source: QTS-Data (private). See the README for how submissions flow in.</span>
     </footer>
   </main>
 

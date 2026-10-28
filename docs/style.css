@@ -31,27 +31,36 @@
   --cat-usecase: #9c6f05;
   --cat-query: #2f8f5b;
   --cat-outcome: #2a5fa0;
-  /* Diverging blue <-> red with a neutral gray midpoint (cost of an
-     incorrect answer: Low ... Critical). Each arm validated as a one-hue
-     ordinal ramp with the dataviz skill's validator, per mode. */
-  --diverging-1: #256abf;
-  --diverging-2: #86b6ef;
-  --diverging-3: #d6d5ce;
-  --diverging-4: #f09a99;
-  --diverging-5: #d13f3e;
-  /* Heatmap: 5 steps of the brand purple mixed toward the surface, few ->
-     many, with the label ink that stays legible on each step. Defined via
-     var() so they follow --series-1/--surface-1 into dark mode. */
-  --heat-1: color-mix(in srgb, var(--series-1) 20%, var(--surface-1));
-  --heat-2: color-mix(in srgb, var(--series-1) 40%, var(--surface-1));
-  --heat-3: color-mix(in srgb, var(--series-1) 60%, var(--surface-1));
-  --heat-4: color-mix(in srgb, var(--series-1) 80%, var(--surface-1));
-  --heat-5: var(--series-1);
-  --heat-1-text: var(--text-primary);
-  --heat-2-text: var(--text-primary);
-  --heat-3-text: #ffffff;
-  --heat-4-text: #ffffff;
-  --heat-5-text: #ffffff;
+  /* One 5-step purple ordinal scale (few -> many) for the heatmap, with the label ink that
+     stays legible on each step. Validated with the dataviz skill's checker
+     (--ordinal) against this mode's surface; the lightest step clears 2:1. */
+  --seq-1: #b1abd8;
+  --seq-2: #8e84c7;
+  --seq-3: #6a5db6;
+  --seq-4: #4a3aa7;
+  --seq-5: #352b7c;
+  --seq-1-text: #0b0b0b;
+  --seq-2-text: #0b0b0b;
+  --seq-3-text: #ffffff;
+  --seq-4-text: #ffffff;
+  --seq-5-text: #ffffff;
+  /* Cost of an incorrect answer: Low = yellow ... Critical/irreversible =
+     deep red, with a distinct hue for each level in between (orange, red,
+     purple) so any one level can be named at a glance even when its
+     neighbours are missing from a row. Validated all-pairs with the
+     dataviz skill's checker (colour-blind and normal-vision separation
+     both pass); the pale yellow end is below 3:1 against the card, so
+     every segment carries a printed % and .sev-1 gets a thin edge. */
+  --sev-1: #f6d24f;
+  --sev-2: #ec8322;
+  --sev-3: #d0352c;
+  --sev-4: #8e3a9c;
+  --sev-5: #690006;
+  --sev-1-text: #0b0b0b;
+  --sev-2-text: #0b0b0b;
+  --sev-3-text: #ffffff;
+  --sev-4-text: #ffffff;
+  --sev-5-text: #ffffff;
   /* Pie slices (where run, query pattern): categorical, fixed order, never
      cycled -- a 5th+ category folds into a gray "Other". Validated all-pairs
      with the dataviz skill's checker (light: all pass; dark: CVD in the
@@ -85,21 +94,26 @@
     --cat-usecase: #e0b23e;
     --cat-query: #6bd99b;
     --cat-outcome: #7da8e0;
-    --diverging-1: #5598e7;
-    --diverging-2: #1c5cab;
-    --diverging-3: #4a4a46;
-    --diverging-4: #9e4544;
-    --diverging-5: #e66767;
-    --heat-1: color-mix(in srgb, var(--series-1) 20%, var(--surface-1));
-    --heat-2: color-mix(in srgb, var(--series-1) 40%, var(--surface-1));
-    --heat-3: color-mix(in srgb, var(--series-1) 60%, var(--surface-1));
-    --heat-4: color-mix(in srgb, var(--series-1) 80%, var(--surface-1));
-    --heat-5: var(--series-1);
-    --heat-1-text: #ffffff;
-    --heat-2-text: #ffffff;
-    --heat-3-text: #ffffff;
-    --heat-4-text: #0b0b0b;
-    --heat-5-text: #0b0b0b;
+    --seq-1: #4f4a77;
+    --seq-2: #635c9a;
+    --seq-3: #7870bf;
+    --seq-4: #9085e9;
+    --seq-5: #b7aff3;
+    --seq-1-text: #ffffff;
+    --seq-2-text: #ffffff;
+    --seq-3-text: #ffffff;
+    --seq-4-text: #0b0b0b;
+    --seq-5-text: #0b0b0b;
+    --sev-1: #f6d24f;
+    --sev-2: #ee8a26;
+    --sev-3: #de4433;
+    --sev-4: #b679d4;
+    --sev-5: #8f0f19;
+    --sev-1-text: #0b0b0b;
+    --sev-2-text: #0b0b0b;
+    --sev-3-text: #0b0b0b;
+    --sev-4-text: #0b0b0b;
+    --sev-5-text: #ffffff;
     --pie-1: #9085e9;
     --pie-2: #c98500;
     --pie-3: #008300;
@@ -279,8 +293,8 @@ body {
   grid-column: 1 / -1;
 }
 
-/* A full-width row holding three compact cards (the two pies + the
-   keyword cloud). */
+/* A full-width row holding three compact cards (gap ranking, query pattern
+   pie, keyword cloud). */
 .chart-row-3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -332,8 +346,7 @@ body {
   padding: 24px 0;
 }
 
-#chart-container,
-#outcome-container {
+#chart-container {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -351,6 +364,12 @@ body {
 
 .bar-row {
   grid-template-columns: 22px minmax(0, 160px) 1fr 40px 44px;
+}
+
+/* A third-width card has less room, so the label column gives way first
+   (long labels already truncate with a tooltip). */
+.chart-row-3 .bar-row {
+  grid-template-columns: 22px minmax(0, 130px) 1fr 32px 40px;
 }
 
 /* No rank column — outcome is a fixed 3-state scale, not ranked by count. */
@@ -516,7 +535,7 @@ body {
 }
 
 .stacked-track {
-  height: 20px;
+  height: 22px;
   border-radius: 6px;
   display: flex;
   gap: 2px; /* the surface-color gap between segments */
@@ -526,6 +545,30 @@ body {
 .stacked-segment {
   height: 100%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* % printed on a segment (cost and outcome-by-platform charts). Ink comes
+   from the segment's own fill class so it stays legible on every step. */
+.stacked-pct {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.bar-fill-good,
+.bar-fill-warning {
+  color: #0b0b0b;
+}
+
+.bar-fill-critical {
+  color: #ffffff;
 }
 
 .stacked-segment:focus-visible {
@@ -553,93 +596,24 @@ body {
   background: var(--status-critical);
 }
 
-.stacked-total {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-}
-
-/* ---------- Diverging chart (cost of an incorrect answer) ---------- */
-
-.diverging-1 { background: var(--diverging-1); }
-.diverging-2 { background: var(--diverging-2); }
-.diverging-3 { background: var(--diverging-3); }
-.diverging-4 { background: var(--diverging-4); }
-.diverging-5 { background: var(--diverging-5); }
-
-.diverging-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.diverging-row {
-  display: grid;
-  grid-template-columns: minmax(0, 160px) 1fr 40px;
-  align-items: center;
-  gap: 12px;
-  padding: 7px 8px;
-  border-radius: 8px;
-}
-
-.diverging-row:hover {
-  background: color-mix(in srgb, var(--series-1) 6%, transparent);
-}
-
-/* The overall row sits apart from the per-gap rows below it. */
-.diverging-row-overall {
+/* The "All queries" row sits apart from the per-gap rows below it. */
+.stacked-row-overall {
   border-bottom: 1px solid var(--gridline);
   border-radius: 8px 8px 0 0;
   padding-bottom: 11px;
   margin-bottom: 4px;
 }
 
-.diverging-row-overall .stacked-label {
+.stacked-row-overall .stacked-label {
   font-weight: 700;
 }
 
-.diverging-track {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: 20px;
-  /* the center line every row diverges from */
-  background: linear-gradient(var(--baseline), var(--baseline)) center / 1px 100% no-repeat;
-}
-
-.diverging-half {
-  display: flex;
-  gap: 2px; /* the surface-color gap between segments */
-  height: 100%;
-}
-
-.diverging-half-left {
-  justify-content: flex-end;
-  padding-right: 1px;
-}
-
-.diverging-half-right {
-  padding-left: 1px;
-}
-
-.diverging-segment {
-  height: 100%;
-  cursor: pointer;
-}
-
-.diverging-segment:focus-visible {
-  outline: 2px solid var(--text-primary);
-  outline-offset: -2px;
-}
-
-/* Rounded only at each bar's outer ends -- the center stays square. */
-.diverging-half-left .diverging-segment:first-child {
-  border-radius: 6px 0 0 6px;
-}
-
-.diverging-half-right .diverging-segment:last-child {
-  border-radius: 0 6px 6px 0;
+.stacked-total {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 .chart-note {
@@ -700,11 +674,16 @@ body {
   cursor: pointer;
 }
 
-.heat-1 { background: var(--heat-1); color: var(--heat-1-text); }
-.heat-2 { background: var(--heat-2); color: var(--heat-2-text); }
-.heat-3 { background: var(--heat-3); color: var(--heat-3-text); }
-.heat-4 { background: var(--heat-4); color: var(--heat-4-text); }
-.heat-5 { background: var(--heat-5); color: var(--heat-5-text); }
+.seq-1 { background: var(--seq-1); color: var(--seq-1-text); }
+.seq-2 { background: var(--seq-2); color: var(--seq-2-text); }
+.seq-3 { background: var(--seq-3); color: var(--seq-3-text); }
+.seq-4 { background: var(--seq-4); color: var(--seq-4-text); }
+.seq-5 { background: var(--seq-5); color: var(--seq-5-text); }
+.sev-1 { background: var(--sev-1); color: var(--sev-1-text); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+.sev-2 { background: var(--sev-2); color: var(--sev-2-text); }
+.sev-3 { background: var(--sev-3); color: var(--sev-3-text); }
+.sev-4 { background: var(--sev-4); color: var(--sev-4-text); }
+.sev-5 { background: var(--sev-5); color: var(--sev-5-text); }
 
 .heat-legend {
   display: flex;
@@ -735,16 +714,23 @@ body {
 
 /* ---------- Pie charts (where run, query pattern) ---------- */
 
+/* Pie with its legend beside it, so the pie can grow into the card's
+   width instead of leaving empty space around a small circle. Wraps to
+   pie-above-legend when the card is too narrow for both. */
 .pie-chart {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 18px;
+  justify-content: center;
+  gap: 18px 24px;
+  flex: 1;
+  padding-top: 8px;
 }
 
 .pie-svg {
-  width: 160px;
-  height: 160px;
+  width: clamp(150px, 48%, 240px);
+  height: auto;
+  aspect-ratio: 1;
   display: block;
 }
 
@@ -767,8 +753,9 @@ body {
 .pie-legend {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  width: 100%;
+  gap: 8px;
+  flex: 1 1 150px;
+  min-width: 0;
 }
 
 .pie-legend-item {
@@ -925,73 +912,87 @@ body {
 /* ---------- Form (log-scenario.html) ---------- */
 
 .form-card {
-  max-width: 960px;
+  max-width: 1200px;
 }
 
+/* Each section is a collapsible <details>, filled in one at a time (see
+   log-scenario.js). --section-color is set inline per section. */
 .form-section {
-  border-left: 3px solid transparent;
-  padding-left: 20px;
-  margin-bottom: 28px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--section-color);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  background: var(--surface-1);
 }
 
 .form-section-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-  margin: 0 0 14px;
+  color: var(--section-color);
+  margin: 0;
+  padding: 14px 18px 8px;
 }
 
 .form-section-note {
   font-size: 12px;
   color: var(--text-muted);
-  margin: -8px 0 16px;
-  grid-column: 1 / -1;
+  margin: 4px 0 0;
 }
 
-/* A 6-column base grid so rows of 2 or 3 fields both land evenly: a plain
-   .form-field spans half a row (3/6, the default); .form-field-third spans
-   a third (2/6, for 3-up rows); .form-field-full spans the whole row. */
+/* Two columns per section: required fields on the left, optional on the
+   right, so filling in the basics is one pass down the left. Stacks on
+   narrow screens (required first). */
 .form-section-fields {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 18px 20px;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 32px;
+  align-items: start;
+  padding: 4px 18px 18px;
+}
+
+.form-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.form-col-optional {
+  border-left: 1px dashed var(--border);
+  padding-left: 32px;
+  margin-left: -16px;
+}
+
+.form-col-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 -8px;
 }
 
 @media (max-width: 860px) {
   .form-section-fields {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .form-field-third {
-    grid-column: span 1;
-  }
-}
-
-@media (max-width: 520px) {
-  .form-section-fields {
     grid-template-columns: 1fr;
   }
-  .form-field-third {
-    grid-column: span 1;
+
+  .form-col-optional {
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
   }
 }
 
-.form-field-third {
-  grid-column: span 2;
-}
-
-.form-field-full {
-  grid-column: 1 / -1;
-}
-
-/* #outcome-followups wraps a group of conditional fields; when visible its
-   children need to participate directly in the parent .form-section-fields
-   grid (not sit in their own nested box). When JS sets [hidden], the
-   browser's own [hidden] { display: none } default takes over as normal. */
+/* #outcome-followups wraps the conditional "what went wrong" fields; when
+   visible they stack with the same spacing as every other field. */
 #outcome-followups:not([hidden]) {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .form-field {
-  grid-column: span 3;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -1003,9 +1004,67 @@ body {
   color: var(--text-primary);
 }
 
+/* Shown under a field that needs fixing (log-scenario.js). */
+.field-error {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--status-critical);
+  margin: 0;
+}
+
+.field-error::before {
+  content: "⚠ ";
+}
+
+.form-field [aria-invalid="true"] {
+  border-color: var(--status-critical);
+}
+
+/* Submit button with a one-line "what's still left" beside it. */
+.submit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: 6px;
+}
+
+.submit-row .form-submit {
+  margin-top: 0;
+}
+
+.submit-summary {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  flex: 1 1 280px;
+}
+
+.submit-summary a {
+  color: var(--status-critical);
+  font-weight: 600;
+}
+
+.submit-summary.is-done {
+  color: var(--status-good);
+  font-weight: 600;
+}
+
+.submit-summary.is-done::before {
+  content: "✓ ";
+}
+
+.field-hint {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  margin: -2px 0 2px;
+}
+
 /* Required marker, driven by the `required` attribute itself so fields that
-   log-scenario.js toggles (outcome follow-ups, the new use-case-ID box)
-   gain/lose it automatically. */
+   log-scenario.js toggles (the new use-case-ID box) gain/lose it
+   automatically. */
 .form-field:has(> :required:not([hidden])) > label::after {
   content: " *";
   color: var(--status-critical);
@@ -1018,9 +1077,10 @@ body {
 .form-required-note {
   font-size: 12px;
   color: var(--text-muted);
-  margin: 0 0 20px;
+  margin: 0 0 16px;
 }
 
+.form-field input,
 .form-field select,
 .form-field textarea {
   font: inherit;
@@ -1031,12 +1091,23 @@ body {
   border-radius: 8px;
   padding: 10px 12px;
   resize: vertical;
+  width: 100%;
 }
 
+/* Short answers (IDs, dates, names) don't need the full row. */
+.form-field .input-short {
+  max-width: 420px;
+}
+
+.form-field input:focus,
 .form-field select:focus,
 .form-field textarea:focus {
   outline: 2px solid var(--series-1);
   outline-offset: -1px;
+}
+
+.form-submit {
+  margin-top: 6px;
 }
 
 .form-checkbox-field {

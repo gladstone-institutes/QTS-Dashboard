@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Log a Usage Scenario — QTS Dashboard</title>
+  <title>Log a Usage Scenario · QTS Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -30,7 +30,7 @@
       <h1>Log a usage scenario</h1>
       <p class="subtitle">
         Use this form to enter the details for a usage scenario for tracking purposes.
-        Filling this in doesn't save anything yet — the next step opens a pre-filled
+        Filling this in doesn't save anything yet. The next step opens a pre-filled
         GitHub issue for you to review and submit (you'll need access to the private
         QTS-Data repo).
       </p>
@@ -40,255 +40,333 @@
       <form id="scenario-form" novalidate>
         <p class="form-required-note"><span class="required-mark">*</span> Required</p>
 
+        <!-- Required fields are on the left, optional on the right. -->
+
         <!-- Administrative information -->
-        <div class="form-section" style="border-left-color: var(--cat-admin)">
-          <h2 class="form-section-title" style="color: var(--cat-admin)">Administrative information</h2>
+        <section class="form-section" id="sec-admin" style="--section-color: var(--cat-admin)" aria-labelledby="sec-admin-title">
+          <h2 class="form-section-title" id="sec-admin-title">Administrative information</h2>
           <div class="form-section-fields">
 
-            <div class="form-field">
-              <label for="query_pk">Query PK</label>
-              <input
-                type="text"
-                id="query_pk"
-                name="query_pk"
-                placeholder="Leave blank to auto-generate"
-                pattern="^[A-Za-z0-9\-]+$"
-                title="Letters, numbers and hyphens only"
-              />
+            <div class="form-col form-col-required">
+              <p class="form-col-label">Required</p>
+              <!-- Neither control carries name="use_case_id": log-scenario.js
+                   sets that param from whichever one is in use. -->
+              <div class="form-field">
+                <label for="use_case_id_select">Use case ID</label>
+                <p class="field-hint" id="use_case_id-hint">The ID for a particular team's use case, kept for follow-up. One use case can have several queries. Pick an existing ID or add a new one.</p>
+                <select id="use_case_id_select" class="input-short" aria-describedby="use_case_id-hint use_case_id-error" required>
+                  <option value="" disabled selected>Choose one…</option>
+                  <option value="__new__">+ Add a new use case ID…</option>
+                </select>
+                <input type="text" id="use_case_id_new" class="input-short" aria-describedby="use_case_id-hint use_case_id-error" placeholder="New use case ID, e.g. CATRAX-03" hidden />
+                <p class="field-error" id="use_case_id-error" hidden></p>
+              </div>
+
+              <div class="form-field">
+                <label for="query_run_date">Query run date (DD/MM/YYYY)</label>
+                <p class="field-hint" id="query_run_date-hint">Day, month and year the query was run.</p>
+                <input
+                  type="text"
+                  id="query_run_date" data-error="Use DD/MM/YYYY, e.g. 15/06/2026."
+                  name="query_run_date"
+                  class="input-short"
+                  aria-describedby="query_run_date-hint query_run_date-error"
+                  required
+                  placeholder="15/06/2026"
+                  pattern="^(0[1-9]|[12]\d|3[01])/(0[1-9]|1[0-2])/\d{4}$"
+                  title="Day, month and year as DD/MM/YYYY, e.g. 15/06/2026"
+                />
+                <p class="field-error" id="query_run_date-error" hidden></p>
+              </div>
             </div>
 
-            <!-- Neither control carries name="use_case_id": log-scenario.js
-                 sets that param from whichever one is in use. -->
-            <div class="form-field">
-              <label for="use_case_id_select">Use case ID</label>
-              <select id="use_case_id_select" required>
-                <option value="" disabled selected>Choose one…</option>
-                <option value="__new__">+ Add a new use case ID…</option>
-              </select>
-              <input type="text" id="use_case_id_new" placeholder="New use case ID, e.g. CATRAX-03" hidden />
-            </div>
+            <div class="form-col form-col-optional">
+              <p class="form-col-label">Optional</p>
+              <div class="form-field">
+                <label for="query_pk">Query PK</label>
+                <p class="field-hint" id="query_pk-hint">Unique ID for this query, usually the query PK from the Translator UI. Leave blank to auto-generate the next number.</p>
+                <input
+                  type="text"
+                  id="query_pk" data-error="Use only letters, numbers and hyphens."
+                  name="query_pk"
+                  class="input-short"
+                  aria-describedby="query_pk-hint query_pk-error"
+                  placeholder="e.g. b2de014b-8c6a-4adb-9db9-803e5d27fc4a"
+                  pattern="^[A-Za-z0-9\-]+$"
+                  title="Letters, numbers and hyphens only"
+                />
+                <p class="field-error" id="query_pk-error" hidden></p>
+              </div>
 
-            <div class="form-field">
-              <label for="query_run_date">Query run date (MM/YYYY)</label>
-              <input
-                type="text"
-                id="query_run_date"
-                name="query_run_date"
-                required
-                placeholder="06/2026"
-                pattern="^(0[1-9]|1[0-2])/\d{4}$"
-              />
-            </div>
-
-            <div class="form-field">
-              <label for="facilitator">Facilitator</label>
-              <input type="text" id="facilitator" name="facilitator" />
+              <div class="form-field">
+                <label for="facilitator">Facilitator</label>
+                <p class="field-hint" id="facilitator-hint">Name of the UEIC facilitator for this use case.</p>
+                <input type="text" id="facilitator" name="facilitator" class="input-short" aria-describedby="facilitator-hint" />
+              </div>
             </div>
 
           </div>
-        </div>
+        </section>
 
         <!-- Use-case description -->
-        <div class="form-section" style="border-left-color: var(--cat-usecase)">
-          <h2 class="form-section-title" style="color: var(--cat-usecase)">Use-case description</h2>
+        <section class="form-section" id="sec-usecase" style="--section-color: var(--cat-usecase)" aria-labelledby="sec-usecase-title">
+          <h2 class="form-section-title" id="sec-usecase-title">Use-case description</h2>
           <div class="form-section-fields">
 
-            <div class="form-field">
-              <label for="keyword">Keyword</label>
-              <input type="text" id="keyword" name="keyword" placeholder="therapeutic target" />
+            <div class="form-col form-col-required">
+              <p class="form-col-label">Required</p>
+              <div class="form-field">
+                <label for="intent">Intent</label>
+                <p class="field-hint" id="intent-hint">One sentence summarizing what the user wants to do.</p>
+                <textarea
+                  id="intent"
+                  name="intent"
+                  rows="2"
+                  aria-describedby="intent-hint intent-error"
+                  required
+                  placeholder="Find direct actionable targets of biological mechanisms involved in disease X."
+                ></textarea>
+                <p class="field-error" id="intent-error" hidden></p>
+              </div>
+
+              <div class="form-field">
+                <label for="nature_of_gap">Nature of the gap they want to close</label>
+                <p class="field-hint" id="nature_of_gap-hint">When they consult this service, what are they primarily looking for?</p>
+                <select id="nature_of_gap" name="nature_of_gap" aria-describedby="nature_of_gap-hint nature_of_gap-error" required>
+                  <option value="" disabled selected>Choose one…</option>
+                  <option value="0 - out of scope">0 - out of scope</option>
+                  <option value="1 - Information gap">1 - Information gap (specific data)</option>
+                  <option value="2 - Understanding gap">2 - Understanding gap (explanation of mechanisms)</option>
+                  <option value="3 - Decision gap">3 - Decision gap (help choosing between options)</option>
+                  <option value="4 - Production gap">4 - Production gap (help drafting or generating content)</option>
+                  <option value="5 - Orientation gap">5 - Orientation gap (help reframing a problem)</option>
+                </select>
+                <p class="field-error" id="nature_of_gap-error" hidden></p>
+              </div>
+
+              <div class="form-field">
+                <label for="expected_outcome">Expected outcome(s) - satisfaction</label>
+                <p class="field-hint" id="expected_outcome-hint">One sentence describing precisely the output the user would like to have.</p>
+                <textarea
+                  id="expected_outcome"
+                  name="expected_outcome"
+                  rows="2"
+                  aria-describedby="expected_outcome-hint expected_outcome-error"
+                  required
+                  placeholder="A ranked list of candidate entities with a confirmed mechanistic role."
+                ></textarea>
+                <p class="field-error" id="expected_outcome-error" hidden></p>
+              </div>
             </div>
 
-            <div class="form-field">
-              <label for="nature_of_gap">Nature of the gap they want to close</label>
-              <select id="nature_of_gap" name="nature_of_gap" required>
-                <option value="" disabled selected>Choose one…</option>
-                <option>0 - out of scope</option>
-                <option>1 - Information gap</option>
-                <option>2 - Understanding gap</option>
-                <option>3 - Decision gap</option>
-                <option>4 - Production gap</option>
-                <option>5 - Orientation gap</option>
-              </select>
-            </div>
+            <div class="form-col form-col-optional">
+              <p class="form-col-label">Optional</p>
+              <div class="form-field">
+                <label for="keyword">Keyword</label>
+                <p class="field-hint" id="keyword-hint">A keyword to tag the type of use case.</p>
+                <input type="text" id="keyword" name="keyword" class="input-short" aria-describedby="keyword-hint" placeholder="therapeutic target" />
+              </div>
 
-            <div class="form-field">
-              <label for="intent">Intent</label>
-              <textarea
-                id="intent"
-                name="intent"
-                rows="2"
-                required
-                placeholder="Find direct actionable targets of biological mechanisms involved in disease X."
-              ></textarea>
-            </div>
+              <div class="form-field">
+                <label for="internal_model_structure">How structured their internal model is before asking</label>
+                <p class="field-hint" id="internal_model_structure-hint">Before using the service, how clearly is their question defined?</p>
+                <select id="internal_model_structure" name="internal_model_structure" aria-describedby="internal_model_structure-hint">
+                  <option value="" selected>Choose one…</option>
+                  <option value="1 - Undefined">1 - Undefined (no specific aim formulated)</option>
+                  <option value="2 - Broad">2 - Broad (exploring a topic)</option>
+                  <option value="3 - Structured">3 - Structured (refining a specific question)</option>
+                  <option value="4 - Constrained">4 - Constrained (answering a question given a specific context or knowledge)</option>
+                  <option value="5 - Hypothesis-driven">5 - Hypothesis-driven (testing a defined hypothesis)</option>
+                </select>
+              </div>
 
-            <div class="form-field">
-              <label for="expected_outcome">Expected outcome(s) - satisfaction</label>
-              <textarea
-                id="expected_outcome"
-                name="expected_outcome"
-                rows="2"
-                required
-                placeholder="A ranked list of candidate entities with a confirmed mechanistic role."
-              ></textarea>
-            </div>
+              <div class="form-field">
+                <label for="cognitive_effort">Desired distribution of cognitive effort</label>
+                <p class="field-hint" id="cognitive_effort-hint">What do they prefer the system to do?</p>
+                <select id="cognitive_effort" name="cognitive_effort" aria-describedby="cognitive_effort-hint">
+                  <option value="" selected>Choose one…</option>
+                  <option value="1 - Stimulus only">1 - Stimulus only (stimulate thinking: "show me what's there to help me think")</option>
+                  <option value="2 - Co-thinking">2 - Co-thinking (exploration: "respond to what I want as I interact")</option>
+                  <option value="3 - Guided support">3 - Guided support (step by step: "guide me to the next step and explain why")</option>
+                  <option value="4 - Delegated reasoning">4 - Delegated reasoning (full analysis: "give me summaries of the findings")</option>
+                  <option value="5 - Full delegation">5 - Full delegation (direct recommendation: "a quick, possible answer")</option>
+                </select>
+              </div>
 
-            <div class="form-field form-field-third">
-              <label for="internal_model_structure">How structured their internal model is before asking</label>
-              <select id="internal_model_structure" name="internal_model_structure">
-                <option value="" selected>Choose one…</option>
-                <option>1 - Undefined</option>
-                <option>2 - Broad</option>
-                <option>3 - Structured</option>
-                <option>4 - Constrained</option>
-                <option>5 - Hypothesis-driven</option>
-              </select>
-            </div>
+              <div class="form-field">
+                <label for="cost_of_error">What is the cost of an incorrect answer</label>
+                <p class="field-hint" id="cost_of_error-hint">In this use case, how significant are the consequences of an incorrect answer? What would errors mainly cost?</p>
+                <select id="cost_of_error" name="cost_of_error" aria-describedby="cost_of_error-hint">
+                  <option value="" selected>Choose one…</option>
+                  <option value="1 - Low">1 - Low (nothing)</option>
+                  <option value="2 - Moderate">2 - Moderate (time)</option>
+                  <option value="3 - Practical impact">3 - Practical impact (resources)</option>
+                  <option value="4 - High consequence">4 - High consequence (publication or communication quality)</option>
+                  <option value="5 - Critical/irreversible">5 - Critical/irreversible (regulatory compliance or animal safety)</option>
+                </select>
+              </div>
 
-            <div class="form-field form-field-third">
-              <label for="cognitive_effort">Desired distribution of cognitive effort</label>
-              <select id="cognitive_effort" name="cognitive_effort">
-                <option value="" selected>Choose one…</option>
-                <option>1 - Stimulus only</option>
-                <option>2 - Co-thinking</option>
-                <option>3 - Guided support</option>
-                <option>4 - Delegated reasoning</option>
-                <option>5 - Full delegation</option>
-              </select>
-            </div>
-
-            <div class="form-field form-field-third">
-              <label for="cost_of_error">What is the cost of an incorrect answer</label>
-              <select id="cost_of_error" name="cost_of_error">
-                <option value="" selected>Choose one…</option>
-                <option>1 - Low</option>
-                <option>2 - Moderate</option>
-                <option>3 - Practical impact</option>
-                <option>4 - High consequence</option>
-                <option>5 - Critical/irreversible</option>
-              </select>
-            </div>
-
-            <div class="form-field form-field-full">
-              <label for="knowledge_sources">Knowledge sources end users would turn to</label>
-              <textarea id="knowledge_sources" name="knowledge_sources" rows="2"></textarea>
+              <div class="form-field">
+                <label for="knowledge_sources">Knowledge sources end users would turn to</label>
+                <p class="field-hint" id="knowledge_sources-hint">Specific sources end users may already have in mind for this use case.</p>
+                <textarea id="knowledge_sources" name="knowledge_sources" rows="2" aria-describedby="knowledge_sources-hint"></textarea>
+              </div>
             </div>
 
           </div>
-        </div>
+        </section>
 
         <!-- Query info -->
-        <div class="form-section" style="border-left-color: var(--cat-query)">
-          <h2 class="form-section-title" style="color: var(--cat-query)">Query info</h2>
+        <section class="form-section" id="sec-query" style="--section-color: var(--cat-query)" aria-labelledby="sec-query-title">
+          <h2 class="form-section-title" id="sec-query-title">Query info</h2>
           <div class="form-section-fields">
 
-            <div class="form-field">
-              <label for="input_nodes">Input node(s)</label>
-              <input type="text" id="input_nodes" name="input_nodes" required placeholder="BRCA2" />
+            <div class="form-col form-col-required">
+              <p class="form-col-label">Required</p>
+              <div class="form-field">
+                <label for="input_nodes">Input node(s)</label>
+                <p class="field-hint" id="input_nodes-hint">The input node or set of inputs, as entered (not normalized). Separate several with semicolons.</p>
+                <input type="text" id="input_nodes" name="input_nodes" aria-describedby="input_nodes-hint input_nodes-error" required placeholder="BRCA2" />
+                <p class="field-error" id="input_nodes-error" hidden></p>
+              </div>
+
+              <div class="form-field">
+                <label for="output_nodes">Output node(s)</label>
+                <p class="field-hint" id="output_nodes-hint">The output node or set of outputs, as entered (not normalized). Separate several with semicolons.</p>
+                <input type="text" id="output_nodes" name="output_nodes" aria-describedby="output_nodes-hint output_nodes-error" required />
+                <p class="field-error" id="output_nodes-error" hidden></p>
+              </div>
+
+              <div class="form-field">
+                <label for="where_run">Where was the query run?</label>
+                <p class="field-hint" id="where_run-hint">The Translator interface or tool where the query was run.</p>
+                <select id="where_run" name="where_run" class="input-short" aria-describedby="where_run-hint where_run-error" required>
+                  <option value="" disabled selected>Choose one…</option>
+                  <option value="UI">UI (Translator web interface)</option>
+                  <option value="ARAX">ARAX</option>
+                  <option value="TCT">TCT (Translator Component Toolkit notebook)</option>
+                </select>
+                <p class="field-error" id="where_run-error" hidden></p>
+              </div>
             </div>
 
-            <div class="form-field">
-              <label for="output_nodes">Output node(s)</label>
-              <input type="text" id="output_nodes" name="output_nodes" required />
-            </div>
+            <div class="form-col form-col-optional">
+              <p class="form-col-label">Optional</p>
+              <div class="form-field">
+                <label for="input_node_categories">Input node(s) categorie(s)</label>
+                <p class="field-hint" id="input_node_categories-hint">Biolink category(ies) of the inputs, separated by semicolons. If there's no matching Biolink category or you're unsure, use a simple one-word description.</p>
+                <input type="text" id="input_node_categories" name="input_node_categories" aria-describedby="input_node_categories-hint" placeholder="biolink:Gene; biolink:Protein" />
+              </div>
 
-            <div class="form-field form-field-third">
-              <label for="input_node_categories">Input node(s) categorie(s)</label>
-              <input type="text" id="input_node_categories" name="input_node_categories" placeholder="biolink:Gene; biolink:Protein" />
-            </div>
+              <div class="form-field">
+                <label for="output_node_categories">Output node(s) categorie(s)</label>
+                <p class="field-hint" id="output_node_categories-hint">Biolink category(ies) of the outputs, separated by semicolons. If there's no matching Biolink category or you're unsure, use a simple one-word description.</p>
+                <input type="text" id="output_node_categories" name="output_node_categories" aria-describedby="output_node_categories-hint" />
+              </div>
 
-            <div class="form-field form-field-third">
-              <label for="output_node_categories">Output node(s) categorie(s)</label>
-              <input type="text" id="output_node_categories" name="output_node_categories" />
-            </div>
+              <div class="form-field">
+                <label for="predicates">Predicates</label>
+                <p class="field-hint" id="predicates-hint">Biolink predicate(s) used, separated by semicolons. To include child predicates, write "children of biolink:…". If you're unsure, use a simple one-word description.</p>
+                <input type="text" id="predicates" name="predicates" aria-describedby="predicates-hint" placeholder="biolink:interacts_with" />
+              </div>
 
-            <div class="form-field form-field-third">
-              <label for="predicates">Predicates</label>
-              <input type="text" id="predicates" name="predicates" placeholder="biolink:interacts_with" />
-            </div>
-
-            <div class="form-field">
-              <label for="query_pattern">Query pattern</label>
-              <select id="query_pattern" name="query_pattern">
-                <option value="" selected>Choose one…</option>
-                <option>1 - Deductive</option>
-                <option>2 - Causal</option>
-                <option>3 - Mechanistic</option>
-                <option>4 - Contextual</option>
-              </select>
-            </div>
-
-            <div class="form-field">
-              <label for="where_run">Where was the query run?</label>
-              <input type="text" id="where_run" name="where_run" required placeholder="UI" />
+              <div class="form-field">
+                <label for="query_pattern">Query pattern</label>
+                <p class="field-hint" id="query_pattern-hint">The type of reasoning the user wants to do (nodes and edges can be lists; edges are directed).</p>
+                <select id="query_pattern" name="query_pattern" aria-describedby="query_pattern-hint">
+                  <option value="" selected>Choose one…</option>
+                  <option value="1 - Deductive">1 - Deductive (from node X, edge j, find all nodes Y)</option>
+                  <option value="2 - Causal">2 - Causal (given node X, edge j, find all nodes Y)</option>
+                  <option value="3 - Mechanistic">3 - Mechanistic (Pathfinder: how can you explain the relationship between nodes X and Y?)</option>
+                  <option value="4 - Contextual">4 - Contextual (Neighborhood: what do we know about node X?)</option>
+                </select>
+              </div>
             </div>
 
           </div>
-        </div>
+        </section>
 
         <!-- Outcome -->
-        <div class="form-section" style="border-left-color: var(--cat-outcome)">
-          <h2 class="form-section-title" style="color: var(--cat-outcome)">Outcome</h2>
+        <section class="form-section" id="sec-outcome" style="--section-color: var(--cat-outcome)" aria-labelledby="sec-outcome-title">
+          <h2 class="form-section-title" id="sec-outcome-title">Outcome</h2>
           <div class="form-section-fields">
 
-            <div class="form-field">
-              <label for="outcome">Outcome</label>
-              <select id="outcome" name="outcome" required>
-                <option value="" disabled selected>Choose one…</option>
-                <option>Y</option>
-                <option>Partial</option>
-                <option>N</option>
-              </select>
+            <div class="form-col form-col-required">
+              <p class="form-col-label">Required</p>
+              <div class="form-field">
+                <label for="outcome">Outcome</label>
+                <p class="field-hint" id="outcome-hint">Did the query run successfully? Success is defined by the facilitator for each use case.</p>
+                <select id="outcome" name="outcome" class="input-short" aria-describedby="outcome-hint outcome-error" required>
+                  <option value="" disabled selected>Choose one…</option>
+                  <option value="Y">Y (successful)</option>
+                  <option value="Partial">Partial (partly successful)</option>
+                  <option value="N">N (not successful)</option>
+                </select>
+                <p class="field-error" id="outcome-error" hidden></p>
+              </div>
             </div>
 
-            <div class="form-field">
-              <label for="nodes_of_interest">Any particular nodes of interest?</label>
-              <input type="text" id="nodes_of_interest" name="nodes_of_interest" />
-            </div>
-
-            <div id="outcome-followups" hidden>
-              <p class="form-section-note">
-                The fields below are about what went wrong — fill in whatever
-                applies, since the outcome above wasn't fully successful.
-              </p>
-
+            <div class="form-col form-col-optional">
+              <p class="form-col-label">Optional</p>
               <div class="form-field">
-                <label for="nodes_of_non_interest">Any particular nodes of non interest (must not show)?</label>
-                <input type="text" id="nodes_of_non_interest" name="nodes_of_non_interest" />
+                <label for="nodes_of_interest">Any particular nodes of interest?</label>
+                <p class="field-hint" id="nodes_of_interest-hint">Nodes in the results that are of interest to the user.</p>
+                <input type="text" id="nodes_of_interest" name="nodes_of_interest" aria-describedby="nodes_of_interest-hint" placeholder="Metformin" />
               </div>
 
-              <div class="form-field">
-                <label for="system_functioning_level">Translator system functioning level for need</label>
-                <input type="text" id="system_functioning_level" name="system_functioning_level" placeholder="grouping" />
-              </div>
+              <div id="outcome-followups" hidden>
+                <p class="form-section-note">
+                  The outcome wasn't fully successful, so these fields about what
+                  went wrong are shown too. Fill in whatever applies.
+                </p>
 
-              <div class="form-field">
-                <label for="workaround_existing">Is a workaround existing? (indicate the development stage)</label>
-                <input type="text" id="workaround_existing" name="workaround_existing" placeholder="not implemented yet" />
-              </div>
+                <div class="form-field">
+                  <label for="nodes_of_non_interest">Any particular nodes of non interest (must not show)?</label>
+                  <p class="field-hint" id="nodes_of_non_interest-hint">Nodes that currently show up in the results but must not.</p>
+                  <input type="text" id="nodes_of_non_interest" name="nodes_of_non_interest" aria-describedby="nodes_of_non_interest-hint" placeholder="Water" />
+                </div>
 
-              <div class="form-field">
-                <label for="github_issue_link">GitHub issue link (separate dev-team issue, not this submission)</label>
-                <input type="url" id="github_issue_link" name="github_issue_link" placeholder="https://github.com/…" />
-              </div>
+                <div class="form-field">
+                  <label for="explanation_of_need">Explanation of the need</label>
+                  <p class="field-hint" id="explanation_of_need-hint">A few words on what the user needs to complete the query.</p>
+                  <textarea id="explanation_of_need" name="explanation_of_need" rows="2" aria-describedby="explanation_of_need-hint" placeholder="display group of results"></textarea>
+                </div>
 
-              <div class="form-field form-field-full">
-                <label for="explanation_of_need">Explanation of the need</label>
-                <textarea id="explanation_of_need" name="explanation_of_need" rows="2"></textarea>
+                <div class="form-field">
+                  <label for="system_functioning_level">Translator system functioning level for need</label>
+                  <p class="field-hint" id="system_functioning_level-hint">The Translator level affected by the need or development.</p>
+                  <input type="text" id="system_functioning_level" name="system_functioning_level" class="input-short" aria-describedby="system_functioning_level-hint" placeholder="grouping" />
+                </div>
+
+                <div class="form-field">
+                  <label for="workaround_existing">Is a workaround existing? (indicate the development stage)</label>
+                  <p class="field-hint" id="workaround_existing-hint">Can the user get the expected outcome another way? Give the development stage, e.g. "in house" if a power user has their own version.</p>
+                  <input type="text" id="workaround_existing" name="workaround_existing" class="input-short" aria-describedby="workaround_existing-hint" placeholder="not implemented yet" />
+                </div>
+
+                <div class="form-field">
+                  <label for="github_issue_link">GitHub issue link</label>
+                  <p class="field-hint" id="github_issue_link-hint">Link to a separate GitHub issue (e.g. in the dev team's repo) tracking a problem, bug or enhancement found in this query. Not this submission's own issue. Leave blank if none.</p>
+                  <input type="url" id="github_issue_link" data-error="Enter a full link starting with https://." name="github_issue_link" aria-describedby="github_issue_link-hint github_issue_link-error" placeholder="https://github.com/…" />
+                  <p class="field-error" id="github_issue_link-error" hidden></p>
+                </div>
               </div>
             </div>
 
           </div>
-        </div>
+        </section>
 
         <div id="form-message" class="form-message" hidden></div>
 
-        <button type="submit" class="form-submit">Review &amp; submit on GitHub</button>
+        <div class="submit-row">
+          <button type="submit" class="form-submit">Review &amp; submit on GitHub</button>
+          <p class="submit-summary" id="submit-summary" aria-live="polite"></p>
+        </div>
       </form>
     </section>
 
     <footer class="page-footer">
-      <span>Opens a pre-filled issue on the private QTS-Data repo — you review and submit it there.</span>
+      <span>Opens a pre-filled issue on the private QTS-Data repo, where you review and submit it.</span>
     </footer>
   </main>
 

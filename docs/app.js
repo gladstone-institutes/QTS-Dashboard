@@ -5,9 +5,8 @@
 const CHART_EMPTY_IDS = [
   "chart-empty",
   "trend-empty",
-  "outcome-empty",
+  "outcome-by-platform-empty",
   "outcome-by-gap-empty",
-  "where-run-empty",
   "query-pattern-empty",
   "keyword-empty",
   "cost-of-error-empty",
@@ -31,8 +30,6 @@ async function loadStats() {
   const containerEl = document.getElementById("chart-container");
   const trendEmptyEl = document.getElementById("trend-empty");
   const trendContainerEl = document.getElementById("trend-container");
-  const outcomeEmptyEl = document.getElementById("outcome-empty");
-  const outcomeContainerEl = document.getElementById("outcome-container");
 
   let stats;
   try {
@@ -58,9 +55,9 @@ async function loadStats() {
   );
 
   if (entries.length === 0) {
-    topCategoryEl.textContent = "—";
+    topCategoryEl.textContent = "–";
     emptyEl.textContent =
-      "No data yet — this updates each time a usage scenario is logged.";
+      "No data yet. This updates each time a usage scenario is logged.";
     emptyEl.hidden = false;
   } else {
     const [topLabel, topValue] = entries[0];
@@ -90,7 +87,7 @@ async function loadStats() {
 
   if (monthEntries.length === 0) {
     trendEmptyEl.textContent =
-      "No data yet — this updates each time a usage scenario is logged.";
+      "No data yet. This updates each time a usage scenario is logged.";
     trendEmptyEl.hidden = false;
   } else {
     renderTrendChart(trendContainerEl, monthEntries);
@@ -110,24 +107,35 @@ async function loadStats() {
     });
   }
 
-  // Outcome breakdown — a fixed-order 3-state scale (not ranked by count,
-  // unlike the gap-nature chart: Y/Partial/N have an inherent sequence,
-  // so a magnitude-sorted rank badge would misrepresent it).
-  const outcomeCounts = stats.outcome_counts || {};
-  const outcomeTotal = Object.values(outcomeCounts).reduce((a, b) => a + b, 0);
+  // Outcome by where the query was run: is success higher on UI, ARAX or
+  // TCT? Platforms in their fixed order (any legacy value after them), with
+  // the overall outcome split pinned on top.
+  const outcomeByPlatformEmptyEl = document.getElementById("outcome-by-platform-empty");
+  const outcomeByPlatformContainerEl = document.getElementById("outcome-by-platform-container");
+  const outcomeByPlatform = stats.outcome_by_where_run || {};
 
-  if (outcomeTotal === 0) {
-    outcomeEmptyEl.textContent =
-      "No data yet — this updates each time a usage scenario is logged.";
-    outcomeEmptyEl.hidden = false;
+  if (Object.keys(outcomeByPlatform).length === 0) {
+    outcomeByPlatformContainerEl.hidden = true;
+    outcomeByPlatformEmptyEl.textContent =
+      "No data yet. This updates each time a usage scenario is logged.";
+    outcomeByPlatformEmptyEl.hidden = false;
   } else {
-    renderOutcomeChart(outcomeContainerEl, outcomeCounts, outcomeTotal);
+    renderStackedChart(
+      document.getElementById("outcome-by-platform-rows"),
+      Object.entries(outcomeByPlatform),
+      OUTCOME_ORDER,
+      (key) => OUTCOME_FILL_CLASS[key],
+      (key) => OUTCOME_LABELS[key],
+      {
+        overallRow: ["All queries", stats.outcome_counts || {}],
+        rowOrder: PLATFORM_ORDER,
+        showPercent: true,
+      }
+    );
   }
 
-  // Two pie charts. Query pattern is a fixed 4-value scale, so each pattern
-  // keeps its own color whatever its count; "where run" is free text, so
-  // it's ranked by count instead.
-  renderPieField(stats, "where_run_counts", "where-run-container", "where-run-empty", null);
+  // Query pattern pie: a fixed 4-value scale, so each pattern keeps its own
+  // color whatever its count.
   renderPieField(stats, "query_pattern_counts", "query-pattern-container", "query-pattern-empty", PATTERN_ORDER);
 
   // Outcome by gap — the combined view: within each gap type, how often did
@@ -139,13 +147,22 @@ async function loadStats() {
 
   if (Object.keys(outcomeByGap).length === 0) {
     outcomeByGapEmptyEl.textContent =
-      "No data yet — this updates each time a usage scenario is logged.";
+      "No data yet. This updates each time a usage scenario is logged.";
     outcomeByGapEmptyEl.hidden = false;
   } else {
-    renderStackedChart(outcomeByGapRowsEl, outcomeByGap);
+    renderStackedChart(
+      outcomeByGapRowsEl,
+      Object.entries(outcomeByGap),
+      OUTCOME_ORDER,
+      (key) => OUTCOME_FILL_CLASS[key],
+      (key) => OUTCOME_LABELS[key],
+      { showPercent: true }
+    );
   }
 
-  // Cost of an incorrect answer -- diverging bar, overall + per gap type.
+  // Cost of an incorrect answer -- 100%-stacked bar, overall + per gap
+  // type, Low (yellow) through Critical (deep red) with a distinct hue per
+  // level, and each segment's % printed on it.
   const costEmptyEl = document.getElementById("cost-of-error-empty");
   const costContainerEl = document.getElementById("cost-of-error-container");
   const costOverall = { ...(stats.cost_of_error_counts || {}) };
@@ -155,13 +172,16 @@ async function loadStats() {
   if (costTotal === 0) {
     costContainerEl.hidden = true;
     costEmptyEl.textContent =
-      "No data yet — this updates each time a usage scenario is logged.";
+      "No data yet. This updates each time a usage scenario is logged.";
     costEmptyEl.hidden = false;
   } else {
-    renderDivergingChart(
+    renderStackedChart(
       document.getElementById("cost-of-error-rows"),
-      costOverall,
-      stats.cost_of_error_by_gap || {}
+      Object.entries(stats.cost_of_error_by_gap || {}),
+      COST_ORDER,
+      (key) => `sev-${COST_ORDER.indexOf(key) + 1}`,
+      (key) => key,
+      { overallRow: ["All queries", costOverall], showPercent: true }
     );
     const unspecified = stats.cost_of_error_unspecified || 0;
     if (unspecified > 0) {
@@ -176,7 +196,7 @@ async function loadStats() {
   const keywordEntries = Object.entries(stats.keyword_counts || {});
   if (keywordEntries.length === 0) {
     keywordEmptyEl.textContent =
-      "No data yet — this updates each time a usage scenario is logged.";
+      "No data yet. This updates each time a usage scenario is logged.";
     keywordEmptyEl.hidden = false;
   } else {
     renderWordCloud(document.getElementById("keyword-container"), keywordEntries);
@@ -188,14 +208,14 @@ async function loadStats() {
 
   if (Object.keys(patternByGap).length === 0) {
     patternByGapEmptyEl.textContent =
-      "No data yet — this updates each time a usage scenario is logged.";
+      "No data yet. This updates each time a usage scenario is logged.";
     patternByGapEmptyEl.hidden = false;
   } else {
     renderHeatmap(document.getElementById("pattern-by-gap-container"), patternByGap);
   }
 }
 
-// Shared by renderBarChart and renderOutcomeChart: attaches a hover/focus
+// Shared by renderBarChart and the stacked charts: attaches a hover/focus
 // tooltip to one row, positioned above it (or below, if there's no room
 // above the chart area) within `container`'s offset-positioned ancestor.
 function attachRowTooltip(row, container, valueText, labelText) {
@@ -307,94 +327,65 @@ const OUTCOME_FILL_CLASS = {
   N: "bar-fill-critical",
 };
 
-function renderOutcomeChart(container, counts, totalRows) {
-  const entries = OUTCOME_ORDER.filter((key) => (counts[key] || 0) > 0).map((key) => [
-    key,
-    OUTCOME_LABELS[key] || key,
-    counts[key],
-  ]);
-  const maxValue = Math.max(...entries.map(([, , v]) => v));
+// A 100%-stacked horizontal bar per row (part-to-whole within each row),
+// segments in the scale's fixed `order` with a 2px surface gap between them
+// (CSS `gap` on .stacked-track). Used by outcome-by-gap and cost of an
+// incorrect answer. `rows` is [label, counts] pairs, drawn largest total
+// first unless `rowOrder` fixes the order (labels not in it follow, by
+// total); an optional `overallRow` is pinned on top and set apart.
+// `showPercent` prints each segment's % on it when the segment is wide
+// enough to hold the text. Zero-count segments are skipped entirely so
+// corner-rounding (:first-child/:last-child) lands on whichever segment is
+// actually visible.
+const MIN_LABELLED_PCT = 8;
+
+function renderStackedChart(container, rows, order, fillClassFor, labelFor, options = {}) {
+  const { overallRow, rowOrder, showPercent } = options;
   container.replaceChildren();
 
-  entries.forEach(([key, label, value]) => {
-    const pct = totalRows > 0 ? Math.round((value / totalRows) * 100) : 0;
+  const rowTotal = (counts) => order.reduce((sum, key) => sum + (counts[key] || 0), 0);
+  const rank = (label) => {
+    const i = rowOrder ? rowOrder.indexOf(label) : -1;
+    return i === -1 ? Infinity : i;
+  };
+  const sorted = rows
+    .filter(([, counts]) => rowTotal(counts) > 0)
+    .sort((a, b) => rank(a[0]) - rank(b[0]) || rowTotal(b[1]) - rowTotal(a[1]));
+  const allRows = overallRow ? [[...overallRow, true], ...sorted] : sorted;
+
+  allRows.forEach(([rowLabel, counts, isOverall]) => {
+    const total = rowTotal(counts);
 
     const row = document.createElement("div");
-    row.className = "outcome-row";
-    row.tabIndex = 0;
-
-    const labelEl = document.createElement("span");
-    labelEl.className = "bar-label";
-    labelEl.textContent = label;
-
-    const track = document.createElement("div");
-    track.className = "bar-track";
-
-    const fill = document.createElement("div");
-    fill.className = `bar-fill ${OUTCOME_FILL_CLASS[key] || ""}`;
-    fill.style.width = `${(value / maxValue) * 100}%`;
-    track.appendChild(fill);
-
-    const valueEl = document.createElement("span");
-    valueEl.className = "bar-value";
-    valueEl.textContent = value;
-
-    const pctEl = document.createElement("span");
-    pctEl.className = "bar-pct";
-    pctEl.textContent = `${pct}%`;
-
-    row.appendChild(labelEl);
-    row.appendChild(track);
-    row.appendChild(valueEl);
-    row.appendChild(pctEl);
-
-    attachRowTooltip(row, container, `${value} (${pct}%)`, label);
-
-    container.appendChild(row);
-  });
-}
-
-// Outcome by gap — a 100%-stacked horizontal bar per gap category (part-
-// to-whole within each category), 3 segments in the fixed Y/Partial/N
-// order with a 2px surface gap between them (CSS `gap` on .stacked-track).
-// Zero-count segments are skipped entirely so corner-rounding (:first-
-// child/:last-child) lands on whichever segment is actually visible.
-function renderStackedChart(container, outcomeByGap) {
-  container.replaceChildren();
-
-  const rows = Object.entries(outcomeByGap)
-    .map(([gapLabel, counts]) => [
-      gapLabel,
-      counts,
-      OUTCOME_ORDER.reduce((sum, key) => sum + (counts[key] || 0), 0),
-    ])
-    .sort((a, b) => b[2] - a[2]);
-
-  rows.forEach(([gapLabel, counts, total]) => {
-    const row = document.createElement("div");
-    row.className = "stacked-row";
+    row.className = isOverall ? "stacked-row stacked-row-overall" : "stacked-row";
 
     const labelEl = document.createElement("span");
     labelEl.className = "stacked-label";
-    labelEl.textContent = gapLabel;
-    labelEl.title = gapLabel;
+    labelEl.textContent = rowLabel;
+    labelEl.title = rowLabel;
 
     const track = document.createElement("div");
     track.className = "stacked-track";
 
     // Each segment is its own hit target with its own tooltip ("the mark
-    // is the hit target" — a combined row-level tooltip would run all 3
-    // breakdowns into one unwieldy line instead).
-    OUTCOME_ORDER.forEach((key) => {
+    // is the hit target"; a combined row-level tooltip would run every
+    // breakdown into one unwieldy line instead).
+    order.forEach((key) => {
       const value = counts[key] || 0;
       if (value === 0) return;
       const pct = total > 0 ? Math.round((value / total) * 100) : 0;
       const segment = document.createElement("div");
-      segment.className = `stacked-segment ${OUTCOME_FILL_CLASS[key]}`;
+      segment.className = `stacked-segment ${fillClassFor(key)}`;
       segment.style.width = `${(value / total) * 100}%`;
       segment.tabIndex = 0;
+      if (showPercent && pct >= MIN_LABELLED_PCT) {
+        const pctEl = document.createElement("span");
+        pctEl.className = "stacked-pct";
+        pctEl.textContent = `${pct}%`;
+        segment.appendChild(pctEl);
+      }
       track.appendChild(segment);
-      attachRowTooltip(segment, container, `${value} (${pct}%)`, `${gapLabel} — ${OUTCOME_LABELS[key]}`);
+      attachRowTooltip(segment, container, `${value} (${pct}%)`, `${rowLabel}: ${labelFor(key)}`);
     });
 
     const totalEl = document.createElement("span");
@@ -409,11 +400,10 @@ function renderStackedChart(container, outcomeByGap) {
   });
 }
 
-// Cost of an incorrect answer is a 5-step scale with a neutral midpoint,
-// so it's drawn as a diverging bar: Low/Moderate extend left of a center
-// line, High/Critical extend right, and "Practical impact" straddles the
-// center (half on each side). Widths are % of each row's own total, so
-// rows of different sizes compare directly.
+// "Where was the query run?" options, in display order.
+const PLATFORM_ORDER = ["UI", "ARAX", "TCT"];
+
+// Cost of an incorrect answer: an ordered 5-step scale, Low -> Critical.
 const COST_ORDER = [
   "Low",
   "Moderate",
@@ -421,86 +411,10 @@ const COST_ORDER = [
   "High consequence",
   "Critical/irreversible",
 ];
-const COST_MIDPOINT = "Practical impact";
-
-function renderDivergingChart(container, overallCounts, countsByGap) {
-  container.replaceChildren();
-
-  const rowTotal = (counts) => COST_ORDER.reduce((sum, key) => sum + (counts[key] || 0), 0);
-  const rows = [["All queries", overallCounts, true]].concat(
-    Object.entries(countsByGap)
-      .filter(([, counts]) => rowTotal(counts) > 0)
-      .sort((a, b) => rowTotal(b[1]) - rowTotal(a[1]))
-      .map(([label, counts]) => [label, counts, false])
-  );
-
-  // One shared scale: the widest single side across all rows fills its
-  // half of the track, so the center line lines up for every row.
-  const sideShares = (counts) => {
-    const total = rowTotal(counts);
-    const mid = (counts[COST_MIDPOINT] || 0) / 2;
-    return [
-      ((counts.Low || 0) + (counts.Moderate || 0) + mid) / total,
-      ((counts["High consequence"] || 0) + (counts["Critical/irreversible"] || 0) + mid) / total,
-    ];
-  };
-  const halfMax = Math.max(...rows.map(([, counts]) => Math.max(...sideShares(counts))));
-
-  rows.forEach(([label, counts, isOverall]) => {
-    const total = rowTotal(counts);
-
-    const row = document.createElement("div");
-    row.className = isOverall ? "diverging-row diverging-row-overall" : "diverging-row";
-
-    const labelEl = document.createElement("span");
-    labelEl.className = "stacked-label";
-    labelEl.textContent = label;
-    labelEl.title = label;
-
-    const track = document.createElement("div");
-    track.className = "diverging-track";
-    const left = document.createElement("div");
-    left.className = "diverging-half diverging-half-left";
-    const right = document.createElement("div");
-    right.className = "diverging-half diverging-half-right";
-
-    const addSegment = (half, key, value) => {
-      if (value <= 0) return;
-      const fullValue = counts[key] || 0;
-      const pct = Math.round((fullValue / total) * 100);
-      const segment = document.createElement("div");
-      segment.className = `diverging-segment diverging-${COST_ORDER.indexOf(key) + 1}`;
-      segment.style.width = `${(value / total / halfMax) * 100}%`;
-      segment.tabIndex = 0;
-      half.appendChild(segment);
-      attachRowTooltip(segment, container, `${fullValue} (${pct}%)`, `${label} — ${key}`);
-    };
-
-    const mid = (counts[COST_MIDPOINT] || 0) / 2;
-    addSegment(left, "Low", counts.Low || 0);
-    addSegment(left, "Moderate", counts.Moderate || 0);
-    addSegment(left, COST_MIDPOINT, mid);
-    addSegment(right, COST_MIDPOINT, mid);
-    addSegment(right, "High consequence", counts["High consequence"] || 0);
-    addSegment(right, "Critical/irreversible", counts["Critical/irreversible"] || 0);
-
-    track.appendChild(left);
-    track.appendChild(right);
-
-    const totalEl = document.createElement("span");
-    totalEl.className = "stacked-total";
-    totalEl.textContent = total;
-
-    row.appendChild(labelEl);
-    row.appendChild(track);
-    row.appendChild(totalEl);
-    container.appendChild(row);
-  });
-}
 
 // Query pattern x gap -- a count heatmap. Columns in the scale's own order
 // (not by count). Cell shade is one of 5 steps of the brand purple
-// (--heat-1..5, matching the legend above the grid); every cell also
+// (--seq-1..5, matching the legend above the grid); every cell also
 // prints its number, so shade is never the only encoding.
 const HEAT_STEPS = 5;
 const PATTERN_ORDER = ["Deductive", "Causal", "Mechanistic", "Contextual", "Unspecified"];
@@ -542,9 +456,9 @@ function renderHeatmap(container, patternByGap) {
       const cell = addCell("heatmap-cell", value > 0 ? value : "");
       if (value > 0) {
         const step = Math.max(1, Math.ceil((value / maxValue) * HEAT_STEPS));
-        cell.classList.add(`heat-${step}`);
+        cell.classList.add(`seq-${step}`);
         cell.tabIndex = 0;
-        attachRowTooltip(cell, container, `${value}`, `${gapLabel} — ${pattern}`);
+        attachRowTooltip(cell, container, `${value}`, `${gapLabel}: ${pattern}`);
       }
     });
 
@@ -574,7 +488,7 @@ function renderPieField(stats, fieldKey, containerId, emptyId, fixedOrder) {
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
 
   if (total === 0) {
-    emptyEl.textContent = "No data yet — this updates each time a usage scenario is logged.";
+    emptyEl.textContent = "No data yet. This updates each time a usage scenario is logged.";
     emptyEl.hidden = false;
     return;
   }
@@ -663,7 +577,7 @@ function renderPieChart(container, slices, total) {
     labelEl.title = slice.label;
     const valueEl = document.createElement("span");
     valueEl.className = "pie-legend-value";
-    valueEl.textContent = `${slice.value} · ${pct}%`;
+    valueEl.textContent = `${slice.value} (${pct}%)`;
 
     item.appendChild(swatch);
     item.appendChild(labelEl);
@@ -794,14 +708,23 @@ function renderTrendChart(container, monthEntries) {
     svg.appendChild(text);
   });
 
-  // X-axis month labels.
-  points.forEach((point) => {
+  // X-axis month labels: every nth month so they never overlap, with the
+  // year added whenever it changes from the last label shown ("Mar 2025",
+  // ..., "Jan 2026"), even if January itself is skipped.
+  const MONTH_LABEL_SLOT = 56; // px one "Mar 2025" label needs
+  const labelEvery = Math.max(1, Math.ceil((points.length * MONTH_LABEL_SLOT) / plotWidth));
+  let lastLabelYear = null;
+  points.forEach((point, i) => {
+    if (i % labelEvery !== 0) return;
+    const year = point.month.slice(0, 4);
     const text = document.createElementNS(SVG_NS, "text");
     text.setAttribute("x", point.x);
     text.setAttribute("y", height - marginBottom + 18);
     text.setAttribute("class", "trend-month-label");
     text.setAttribute("text-anchor", "middle");
-    text.textContent = formatMonth(point.month);
+    text.textContent =
+      year !== lastLabelYear ? `${formatMonth(point.month)} ${year}` : formatMonth(point.month);
+    lastLabelYear = year;
     svg.appendChild(text);
   });
 
